@@ -240,9 +240,7 @@ async function main() {
   }
 }
 
-// Run the script
-if (require.main === module) {
-  main();
-}
+// Run the script when executed directly
+main();
 
 export { generateTriviaQuestions, generateTriviaQuestion, saveTriviaQuestion };

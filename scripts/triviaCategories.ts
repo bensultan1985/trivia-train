@@ -8,7 +8,8 @@ export const triviaCategories = {
   geography: {
     water: {
       oceans: ['Atlantic Ocean', 'Pacific Ocean', 'Indian Ocean', 'Arctic Ocean', 'Southern Ocean'],
-      seas: ['Dead Sea', 'Red Sea', 'Mediterranean Sea', 'Caribbean Sea', 'Black Sea', 'Caspian Sea'],
+      seas: ['Dead Sea', 'Red Sea', 'Mediterranean Sea', 'Caribbean Sea', 'Black Sea'],
+      // Note: Caspian Sea is included in lakes due to being landlocked
       rivers: ['Amazon River', 'Nile River', 'Mississippi River', 'Yangtze River', 'Danube River'],
       lakes: ['Lake Superior', 'Lake Victoria', 'Great Salt Lake', 'Caspian Sea', 'Lake Baikal'],
       'topic-extremes': [
@@ -56,7 +57,11 @@ export const triviaCategories = {
         landmarks: ['Great Barrier Reef', 'Uluru', 'Sydney Opera House', 'Twelve Apostles'],
         'topic-extremes': ['Largest coral reef', 'Most venomous creatures']
       },
-      Antarctica: ['Research stations', 'Ice shelves', 'Wildlife', 'topic-extremes']
+      Antarctica: {
+        landmarks: ['Research stations', 'Ice shelves', 'South Pole'],
+        wildlife: ['Penguins', 'Seals', 'Whales'],
+        'topic-extremes': ['Coldest temperature', 'Thickest ice', 'Driest desert']
+      }
     },
     mountains: ['Mount Everest', 'K2', 'Mount Kilimanjaro', 'Mount McKinley', 'Mont Blanc'],
     deserts: ['Sahara Desert', 'Gobi Desert', 'Mojave Desert', 'Atacama Desert', 'Arabian Desert'],
