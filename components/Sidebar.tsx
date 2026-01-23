@@ -1,26 +1,26 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { useState } from 'react'
-import { usePathname } from 'next/navigation'
+import Link from "next/link";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const pathname = usePathname()
-  
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const pathname = usePathname();
+
   const navItems = [
-    { href: '/', label: 'Home', icon: '🏠' },
-    { href: '/training/speed', label: 'Speed Training', icon: '⚡' },
-    { href: '/training/accuracy', label: 'Accuracy Training', icon: '🎯' },
-    { href: '/training/category', label: 'Category Training', icon: '📚' },
-  ]
-  
+    { href: "/", label: "Home", icon: "🏠" },
+    { href: "/training/speed", label: "Speed Training", icon: "⚡" },
+    { href: "/training/accuracy", label: "Accuracy Training", icon: "🎯" },
+    { href: "/training/category", label: "Category Training", icon: "📚" },
+  ];
+
   return (
     <>
       {/* Mobile menu button */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-md"
+        className="lg:hidden fixed top-4 left-4 z-50 rounded-md bg-blue-700 p-2 text-white shadow-lg ring-1 ring-blue-900/10"
         aria-label="Toggle menu"
       >
         <svg
@@ -37,22 +37,24 @@ export default function Sidebar() {
           />
         </svg>
       </button>
-      
+
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-full bg-gray-900 text-white transition-all duration-300 z-40
-          ${isCollapsed ? '-translate-x-full lg:translate-x-0 lg:w-20' : 'translate-x-0 w-64'}
+          fixed top-0 left-0 h-full bg-white text-white transition-all duration-300 z-40
+          ${isCollapsed ? "-translate-x-full lg:translate-x-0 lg:w-20" : "translate-x-0 w-64"}
         `}
       >
         <div className="flex flex-col h-full">
           {/* Logo/Brand */}
-          <div className="p-4 border-b border-gray-700">
-            <div className={`font-bold text-xl ${isCollapsed ? 'text-center' : ''}`}>
-              {isCollapsed ? 'TT' : 'Trivia Train'}
+          <div className="p-4 border-b border-white/10">
+            <div
+              className={`font-bold text-xl ${isCollapsed ? "text-center" : ""}`}
+            >
+              {isCollapsed ? "TT" : "Trivia Train"}
             </div>
           </div>
-          
+
           {/* Navigation */}
           <nav className="flex-1 p-4">
             <ul className="space-y-2">
@@ -62,11 +64,12 @@ export default function Sidebar() {
                     href={item.href}
                     className={`
                       flex items-center gap-3 p-3 rounded-lg transition-colors
-                      ${pathname === item.href 
-                        ? 'bg-blue-600 text-white' 
-                        : 'hover:bg-gray-800 text-gray-300'
+                      ${
+                        pathname === item.href
+                          ? "bg-blue-500 text-white shadow ring-1 ring-blue-900/20"
+                          : "hover:bg-blue-300 hover:text-white text-black/80"
                       }
-                      ${isCollapsed ? 'justify-center' : ''}
+                      ${isCollapsed ? "justify-center" : ""}
                     `}
                   >
                     <span className="text-xl">{item.icon}</span>
@@ -76,16 +79,16 @@ export default function Sidebar() {
               ))}
             </ul>
           </nav>
-          
+
           {/* Toggle button for desktop */}
-          <div className="p-4 border-t border-gray-700 hidden lg:block">
+          <div className="p-4 border-t border-white/10 hidden lg:block">
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="w-full p-2 hover:bg-gray-800 rounded-lg transition-colors"
+              className="w-full rounded-lg p-2 transition-colors hover:bg-white/5"
               aria-label="Toggle sidebar"
             >
               <svg
-                className={`w-6 h-6 mx-auto transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
+                className={`w-6 h-6 mx-auto transition-transform ${isCollapsed ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -101,7 +104,7 @@ export default function Sidebar() {
           </div>
         </div>
       </aside>
-      
+
       {/* Overlay for mobile */}
       {!isCollapsed && (
         <div
@@ -110,5 +113,5 @@ export default function Sidebar() {
         />
       )}
     </>
-  )
+  );
 }

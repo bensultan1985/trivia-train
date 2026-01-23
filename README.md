@@ -1,4 +1,5 @@
 # trivia-train
+
 A game show and trivia training app for people who want to win.
 
 ## Features
@@ -13,44 +14,53 @@ A game show and trivia training app for people who want to win.
 ## Tech Stack
 
 - **Framework**: Next.js 16 with TypeScript
-- **Database**: Prisma ORM with MySQL
-- **Styling**: Tailwind CSS
+- **Database**: Prisma ORM with PostgreSQL
+- **Styling**: Tailwind CSS (v4)
 - **Authentication**: bcrypt + JWT tokens
 
 ## Getting Started
 
+### Tailwind note
+
+This project uses Tailwind v4. Global styles are loaded via `@import "tailwindcss";` in `app/globals.css` (not the older `@tailwind base/components/utilities` directives).
+
 ### Prerequisites
 
-- Node.js 18+ 
-- MySQL database
+- Node.js 18+
+- PostgreSQL database
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/bensultan1985/trivia-train.git
 cd trivia-train
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up your environment variables:
-Create a `.env` file in the root directory:
+   Create a `.env` file in the root directory:
+
 ```env
-DATABASE_URL="mysql://user:password@localhost:3306/trivia_train"
+DATABASE_URL="postgresql://user:password@localhost:5432/trivia_train"
 JWT_SECRET="your-secure-secret-key-here"
 ```
 
 4. Set up the database:
+
 ```bash
 npx prisma migrate dev --name init
 npx prisma generate
 ```
 
 5. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -60,6 +70,7 @@ npm run dev
 ## Database Schema
 
 The app includes models for:
+
 - **User**: User accounts with email, username, and encrypted passwords
 - **Session**: Authentication session management
 - **TriviaQuestion**: Questions with multiple choice answers and categories
