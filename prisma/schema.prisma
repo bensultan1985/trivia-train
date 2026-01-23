@@ -10,6 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -35,16 +36,30 @@ model Session {
 }
 
 model TriviaQuestion {
-  id            String   @id @default(cuid())
-  question      String   @db.Text
-  correctAnswer String   @db.Text
-  wrongAnswer1  String   @db.Text
-  wrongAnswer2  String   @db.Text
-  wrongAnswer3  String   @db.Text
-  category      String
-  difficulty    String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                           String   @id @default(cuid())
+  question                     String   @db.Text
+  correctAnswer                String   @db.Text
+  wrongAnswer1                 String   @db.Text
+  wrongAnswer2                 String   @db.Text
+  wrongAnswer3                 String   @db.Text
+  category                     String
+  categoryPath                 String?
+  difficulty                   String
+  citations                    String[] @default([])
+  engagement                   Int      @default(0)
+  choice1Count                 Int      @default(0)
+  choice2Count                 Int      @default(0)
+  choice3Count                 Int      @default(0)
+  choice4Count                 Int      @default(0)
+  upvotes                      Int      @default(0)
+  downvotes                    Int      @default(0)
+  questionContext              String?  @db.Text
+  answerContext                String?  @db.Text
+  tags                         String[] @default([])
+  importance                   Int      @default(5)
+  commonKnowledgeUserDateRange String?
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
 }
 
 model TrainingSession {
