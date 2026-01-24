@@ -50,6 +50,7 @@ npm install
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/trivia_train"
 JWT_SECRET="your-secure-secret-key-here"
+OPENAI_API_KEY="your-openai-api-key-here"  # Required for trivia generation
 ```
 
 4. Set up the database:
@@ -102,7 +103,21 @@ trivia-train/
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm start` - Start production server
+- `npm run generate-trivia` - Generate trivia questions using AI (see [scripts/README.md](scripts/README.md))
 - `npx prisma studio` - Open Prisma Studio to view/edit data
+
+## Trivia Question Generator
+
+The app includes an AI-powered trivia question generator that can seed the database with high-quality trivia questions. See [scripts/README.md](scripts/README.md) for detailed usage instructions.
+
+Quick start:
+```bash
+# Set up your OpenAI API key in .env
+OPENAI_API_KEY=your_api_key
+
+# Generate 100 trivia questions
+npm run generate-trivia
+```
 
 ## License
 
