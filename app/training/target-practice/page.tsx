@@ -6,11 +6,14 @@ interface Answer {
   text: string;
   isCorrect: boolean;
   choiceKey: 1 | 2 | 3 | 4;
+  context?: string | null;
+  isDistractor?: boolean;
 }
 
 interface Question {
   id: string;
   question: string;
+  questionContext?: string | null;
   answers: Answer[];
   category: string;
   categoryPath: string | null;
@@ -35,6 +38,13 @@ export default function TargetPracticePage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [lastAnsweredQuestionIndex, setLastAnsweredQuestionIndex] = useState<
+    number | null
+  >(null);
+  const [lastSelectedAnswerIndex, setLastSelectedAnswerIndex] = useState<
+    number | null
+  >(null);
+  const [tipsOpen, setTipsOpen] = useState(true);
   const [totalGuessActive, setTotalGuessActive] = useState(false);
   const [gameStats, setGameStats] = useState<GameStats>({
     correct: 0,
@@ -60,6 +70,9 @@ export default function TargetPracticePage() {
       const response = await fetch("/api/trivia/questions?count=15");
       const data = await response.json();
       setQuestions(data.questions);
+      setLastAnsweredQuestionIndex(null);
+      setLastSelectedAnswerIndex(null);
+      setTipsOpen(true);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -84,6 +97,8 @@ export default function TargetPracticePage() {
 
     setSelectedAnswer(answerIndex);
     setShowFeedback(true);
+    setLastAnsweredQuestionIndex(currentQuestionIndex);
+    setLastSelectedAnswerIndex(answerIndex);
 
     const selected = questions[currentQuestionIndex].answers[answerIndex];
     const isCorrect = selected.isCorrect;
@@ -129,6 +144,9 @@ export default function TargetPracticePage() {
   const handlePlayAgain = () => {
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
+    setLastAnsweredQuestionIndex(null);
+    setLastSelectedAnswerIndex(null);
+    setTipsOpen(true);
     setTotalGuessActive(false);
     setGameStats({ correct: 0, incorrect: 0, total: 0, percentCorrect: 0 });
     setIntuitionStats({ used: 0, correct: 0 });
@@ -239,6 +257,16 @@ export default function TargetPracticePage() {
   const intuitionScore =
     intuitionStats.used > 0
       ? Math.round((intuitionStats.correct / intuitionStats.used) * 100)
+      : null;
+
+  const tipsQuestion =
+    lastAnsweredQuestionIndex === null
+      ? null
+      : (questions[lastAnsweredQuestionIndex] ?? null);
+
+  const lastAnswerWasCorrect =
+    tipsQuestion && lastSelectedAnswerIndex !== null
+      ? (tipsQuestion.answers[lastSelectedAnswerIndex]?.isCorrect ?? null)
       : null;
 
   return (
@@ -355,30 +383,121 @@ export default function TargetPracticePage() {
             </div>
 
             {/* Tips Panel */}
-            {showFeedback && selectedAnswer !== null && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-bold mb-3 text-gray-800 dark:text-gray-100">
-                  {questions[currentQuestionIndex].answers[selectedAnswer]
-                    .isCorrect
-                    ? "🎉 Correct!"
-                    : "💡 Keep Practicing!"}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+              <button
+                type="button"
+                onClick={() => setTipsOpen((v) => !v)}
+                className="w-full flex items-center justify-between"
+              >
+                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                  Question Review:
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-3">
-                  {questions[currentQuestionIndex].answers[selectedAnswer]
-                    .isCorrect
-                    ? "Great job! You got it right!"
-                    : "Don't worry - every mistake is a learning opportunity."}
-                </p>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  <p>
-                    <strong>Category:</strong> {topLevelCategory}
-                  </p>
-                  <p>
-                    <strong>Difficulty:</strong> {currentQuestion.difficulty}
-                  </p>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {tipsOpen ? "Hide" : "Show"}
+                </span>
+              </button>
+
+              {tipsOpen && (
+                <div className="mt-4">
+                  {tipsQuestion && lastAnswerWasCorrect !== null ? (
+                    <>
+                      <div className="mb-3">
+                        <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                          {lastAnswerWasCorrect
+                            ? "🎉 Correct!"
+                            : "💡 Keep Practicing!"}
+                        </div>
+                        <div className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                          {/* {lastAnswerWasCorrect
+                            ? "Great job! You got it right!"
+                            : "Don't worry - every mistake is a learning opportunity."} */}
+                        </div>
+                      </div>
+
+                      <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        <p>
+                          <strong>Category:</strong> {tipsQuestion.category}
+                        </p>
+                        <p>
+                          <strong>Difficulty:</strong> {tipsQuestion.difficulty}
+                        </p>
+                      </div>
+
+                      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                        {/* <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Previous Question
+                        </div> */}
+                        <div className="text-sm font-bold text-gray-800 dark:text-gray-100">
+                          {tipsQuestion.question}
+                        </div>
+                        {tipsQuestion.questionContext && (
+                          <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                            <span className="font-bold">
+                              More about this topic:
+                            </span>{" "}
+                            {tipsQuestion.questionContext}
+                          </div>
+                        )}
+
+                        <div className="mt-4 space-y-3">
+                          {tipsQuestion.answers.map((a, idx) => {
+                            const hasContext =
+                              typeof a.context === "string" &&
+                              a.context.trim().length > 0;
+                            const showRow =
+                              hasContext || a.isCorrect || a.isDistractor;
+                            if (!showRow) return null;
+
+                            return (
+                              <div key={idx} className="text-sm">
+                                {a.isCorrect ? (
+                                  <div className="text-gray-800 dark:text-gray-100">
+                                    <span className="font-bold text-green-600">
+                                      Correct
+                                    </span>{" "}
+                                    {a.text}
+                                  </div>
+                                ) : (
+                                  <div className="text-gray-800 dark:text-gray-100 flex items-start gap-2">
+                                    <div>
+                                      <span className="font-bold text-orange-600 ">
+                                        Incorrect
+                                      </span>{" "}
+                                      {a.text}
+                                    </div>
+                                    {a.isDistractor && (
+                                      <span className="relative group inline-flex">
+                                        <span className="cursor-help text-xs font-bold text-yellow-600 dark:text-yellow-400">
+                                          distractor
+                                        </span>
+                                        <span className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-56 -translate-x-1/2 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs text-gray-800 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
+                                          Wrong answer that sounds plausible.
+                                        </span>
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                                {hasContext && (
+                                  <div className="mt-1 text-gray-600 dark:text-gray-300">
+                                    <span className="font-bold">Context:</span>{" "}
+                                    {a.context}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                      Answer a question to see the question and answer context
+                      here.
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Stats Panel - Right sidebar */}
