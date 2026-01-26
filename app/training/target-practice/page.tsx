@@ -188,9 +188,7 @@ export default function TargetPracticePage() {
         selectedIndex != null ? (q.answers[selectedIndex] ?? null) : null;
       const isCorrect = selected?.isCorrect ?? false;
 
-      const borderClass = isCorrect
-        ? "border-green-500"
-        : "border-red-500";
+      const borderClass = isCorrect ? "border-green-500" : "border-red-500";
       const badgeClass = isCorrect
         ? "bg-green-600 text-white"
         : "bg-red-600 text-white";
@@ -211,8 +209,8 @@ export default function TargetPracticePage() {
 
           <div className="pl-10">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              <strong>Category:</strong> {q.category} · <strong>Difficulty:</strong>{" "}
-              {q.difficulty}
+              <strong>Category:</strong> {q.category} ·{" "}
+              <strong>Difficulty:</strong> {q.difficulty}
             </div>
 
             <div className="mt-3 text-base font-bold text-gray-800 dark:text-gray-100">
@@ -246,7 +244,9 @@ export default function TargetPracticePage() {
                   >
                     {a.isCorrect ? (
                       <div className="text-gray-800 dark:text-gray-100">
-                        <span className="font-bold text-green-600">Correct</span>{" "}
+                        <span className="font-bold text-green-600">
+                          Correct
+                        </span>{" "}
                         {a.text}
                       </div>
                     ) : (

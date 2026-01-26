@@ -610,7 +610,7 @@ async function saveTriviaQuestion(
  * Main function to generate trivia questions
  */
 async function generateTriviaQuestions(
-  iterations: number = 500,
+  iterations: number = 100,
   options: GenerationOptions = { includeDistractors: false },
 ): Promise<void> {
   const openaiApiKey = getOpenAiApiKey();
@@ -621,7 +621,7 @@ async function generateTriviaQuestions(
     return;
   }
 
-  const batchSizeRaw = process.env.OPENAI_BATCH_SIZE ?? "100";
+  const batchSizeRaw = process.env.OPENAI_BATCH_SIZE ?? "500";
   const batchSize = Math.max(
     1,
     Math.min(100, parseInt(batchSizeRaw, 10) || 10),
