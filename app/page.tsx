@@ -19,7 +19,7 @@ export default async function HomePage() {
             <>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 Welcome,{" "}
-                <span className="font-bold">{user.firstName || user.username}</span>! Get
+                <span className="font-bold">{user.firstName || user.username || user.emailAddresses[0]?.emailAddress || "User"}</span>! Get
                 ready to sharpen your trivia skills and dominate your next game
                 show.
               </p>

@@ -18,6 +18,8 @@ A game show and trivia training app for people who want to win.
 - **Styling**: Tailwind CSS (v4)
 - **Authentication**: Clerk (email, username/password, phone, Google, X)
 
+> **Note:** The project still includes `bcrypt` and `jsonwebtoken` dependencies for backward compatibility with legacy auth routes. These can be removed in a future update once all users have migrated to Clerk.
+
 ## Getting Started
 
 ### Tailwind note

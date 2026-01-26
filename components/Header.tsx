@@ -15,7 +15,7 @@ export default function Header() {
           {isSignedIn ? (
             <>
               <span className="text-sm text-gray-700">
-                Welcome, {user.firstName || user.username}!
+                Welcome, {user.firstName || user.username || user.emailAddresses[0]?.emailAddress || "User"}!
               </span>
               <UserButton
                 afterSignOutUrl="/"
