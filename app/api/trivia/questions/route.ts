@@ -257,13 +257,48 @@ export async function GET(request: Request) {
 
     // Transform questions to include shuffled answers
     const transformedQuestions = questions.map((q) => {
+      const rawDistractorChoice = Number((q as any).distractorChoice);
+      const distractorChoice = Number.isFinite(rawDistractorChoice)
+        ? Math.trunc(rawDistractorChoice)
+        : 0;
+      // DB: 0 = none; 1..3 correspond to wrongAnswer1..3
+      // API: choiceKey is 1=correct, 2=wrong1, 3=wrong2, 4=wrong3
+      const distractorChoiceKey =
+        distractorChoice >= 1 && distractorChoice <= 3
+          ? distractorChoice + 1
+          : 0;
+
       // We count selections by answer identity (not on-screen position):
       // 1 = correctAnswer, 2 = wrongAnswer1, 3 = wrongAnswer2, 4 = wrongAnswer3
       const answers = [
-        { text: q.correctAnswer, isCorrect: true, choiceKey: 1 },
-        { text: q.wrongAnswer1, isCorrect: false, choiceKey: 2 },
-        { text: q.wrongAnswer2, isCorrect: false, choiceKey: 3 },
-        { text: q.wrongAnswer3, isCorrect: false, choiceKey: 4 },
+        {
+          text: q.correctAnswer,
+          isCorrect: true,
+          choiceKey: 1,
+          isDistractor: false,
+          context: (q as any).answerContext ?? null,
+        },
+        {
+          text: q.wrongAnswer1,
+          isCorrect: false,
+          choiceKey: 2,
+          isDistractor: distractorChoiceKey === 2,
+          context: (q as any).wrongAnswer1Context ?? null,
+        },
+        {
+          text: q.wrongAnswer2,
+          isCorrect: false,
+          choiceKey: 3,
+          isDistractor: distractorChoiceKey === 3,
+          context: (q as any).wrongAnswer2Context ?? null,
+        },
+        {
+          text: q.wrongAnswer3,
+          isCorrect: false,
+          choiceKey: 4,
+          isDistractor: distractorChoiceKey === 4,
+          context: (q as any).wrongAnswer3Context ?? null,
+        },
       ];
 
       // Shuffle the answers (Fisher–Yates)
@@ -289,6 +324,7 @@ export async function GET(request: Request) {
       return {
         id: q.id,
         question: q.question,
+        questionContext: (q as any).questionContext ?? null,
         answers: shuffledAnswers,
         category: q.category,
         categoryPath: q.categoryPath,
