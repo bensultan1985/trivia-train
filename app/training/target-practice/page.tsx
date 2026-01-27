@@ -103,10 +103,6 @@ export default function TargetPracticePage() {
     }
   };
 
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-
   const fetchQuestions = async () => {
     try {
       setLoading(true);

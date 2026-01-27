@@ -266,13 +266,19 @@ export async function GET(request: Request) {
     try {
       // Try to get random questions from the database
       if (answeredQuestionIds.length > 0) {
-        // Exclude already answered questions
-        questions = await prisma.$queryRaw<any[]>`
-          SELECT * FROM "TriviaQuestion"
-          WHERE id NOT IN (${answeredQuestionIds.join("', '")})
-          ORDER BY RANDOM()
-          LIMIT ${count}
-        `;
+        // Exclude already answered questions - use two-step approach
+        // First get all available questions, then randomly select
+        const allQuestions = await prisma.triviaQuestion.findMany({
+          where: {
+            id: {
+              notIn: answeredQuestionIds,
+            },
+          },
+        });
+        
+        // Shuffle and take the requested count
+        const shuffled = allQuestions.sort(() => Math.random() - 0.5);
+        questions = shuffled.slice(0, count);
       } else {
         questions = await prisma.$queryRaw<any[]>`
           SELECT * FROM "TriviaQuestion"
