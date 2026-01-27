@@ -4,7 +4,8 @@ A game show and trivia training app for people who want to win.
 
 ## Features
 
-- **User Authentication**: Secure register/login system with JWT session tokens
+- **User Authentication**: Secure authentication powered by Clerk with support for email, username/password, phone number, Google, and X (Twitter)
+  - ⚠️ **Note:** Authentication methods are configured in the Clerk Dashboard, not in code. See [QUICK_START.md](QUICK_START.md) for setup instructions.
 - **Responsive Design**: Mobile-friendly with collapsible navigation
 - **Training Modes**: Three different training types to improve your trivia skills
   - ⚡ Speed Training: Rapid-fire questions for quick thinking
@@ -16,9 +17,23 @@ A game show and trivia training app for people who want to win.
 - **Framework**: Next.js 16 with TypeScript
 - **Database**: Prisma ORM with PostgreSQL
 - **Styling**: Tailwind CSS (v4)
-- **Authentication**: bcrypt + JWT tokens
+- **Authentication**: Clerk (email, username/password, phone, Google, X)
+
+> **Note:** The project still includes `bcrypt` and `jsonwebtoken` dependencies for backward compatibility with legacy auth routes. These can be removed in a future update once all users have migrated to Clerk.
 
 ## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL database
+- Clerk account (free at https://clerk.com)
+
+### Quick Start
+
+**New to this project?** Follow the [Quick Start Guide](QUICK_START.md) for a step-by-step setup (15-20 minutes).
+
+### Detailed Setup
 
 ### Tailwind note
 
@@ -28,6 +43,7 @@ This project uses Tailwind v4. Global styles are loaded via `@import "tailwindcs
 
 - Node.js 18+
 - PostgreSQL database
+- Clerk account (free at https://clerk.com)
 
 ### Installation
 
@@ -45,13 +61,18 @@ npm install
 ```
 
 3. Set up your environment variables:
-   Create a `.env` file in the root directory:
+   Create a `.env.local` file in the root directory:
 
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/trivia_train"
-JWT_SECRET="your-secure-secret-key-here"
 OPENAI_API_KEY="your-openai-api-key-here"  # Required for trivia generation
+
+# Clerk authentication keys (get these from https://clerk.com)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
+CLERK_SECRET_KEY="your-clerk-secret-key"
 ```
+
+   **Need help?** See [CLERK_SETUP.md](CLERK_SETUP.md) for detailed Clerk configuration.
 
 4. Set up the database:
 
@@ -68,6 +89,17 @@ npm run dev
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+7. Test authentication:
+   - Click **Register** to create an account
+   - See [TESTING_AUTH.md](TESTING_AUTH.md) for comprehensive testing instructions
+
+## Documentation
+
+- **[QUICK_START.md](QUICK_START.md)** - Fast setup guide (15-20 minutes)
+- **[CLERK_SETUP.md](CLERK_SETUP.md)** - Detailed Clerk configuration
+- **[TESTING_AUTH.md](TESTING_AUTH.md)** - Testing instructions
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Technical details
+
 ## Database Schema
 
 The app includes models for:
@@ -82,20 +114,19 @@ The app includes models for:
 ```
 trivia-train/
 ├── app/                      # Next.js App Router pages
-│   ├── api/auth/            # Authentication API routes
-│   ├── login/               # Login page
-│   ├── register/            # Registration page
+│   ├── api/                 # API routes
+│   ├── sign-in/             # Clerk sign-in page
+│   ├── sign-up/             # Clerk sign-up page
 │   ├── training/            # Training mode pages
 │   └── page.tsx             # Home page
 ├── components/              # React components
 │   ├── Header.tsx           # App header with user info
 │   └── Sidebar.tsx          # Collapsible navigation
 ├── lib/                     # Utility functions
-│   ├── auth.ts              # Authentication helpers
 │   └── prisma.ts            # Prisma client
 ├── prisma/                  # Database schema
 │   └── schema.prisma        # Prisma models
-└── public/                  # Static assets
+└── middleware.ts            # Clerk middleware
 ```
 
 ## Development
