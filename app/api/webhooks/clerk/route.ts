@@ -66,15 +66,18 @@ export async function POST(request: NextRequest) {
       const primaryPhone = phone_numbers?.find((phone: any) => phone.id === evt.data.primary_phone_number_id)
       const phoneNumber = primaryPhone?.phone_number || phone_numbers?.[0]?.phone_number
 
-      // Generate a username if not provided
-      const generatedUsername = username || emailAddress?.split('@')[0] || `user_${id.slice(-8)}`
+      // Generate a username if not provided (use full ID for uniqueness)
+      const generatedUsername = username || emailAddress?.split('@')[0] || `clerk_user_${id}`
+
+      // Use a more descriptive placeholder for missing emails
+      const userEmail = emailAddress || `${id}@noemail.clerk.internal`
 
       try {
         // Create user in database
         await prisma.user.create({
           data: {
             clerkUserId: id,
-            email: emailAddress || `${id}@clerk.placeholder`,
+            email: userEmail,
             username: generatedUsername,
             firstName: first_name || null,
             lastName: last_name || null,
@@ -106,17 +109,26 @@ export async function POST(request: NextRequest) {
       const phoneNumber = primaryPhone?.phone_number || phone_numbers?.[0]?.phone_number
 
       try {
+        // Build update data object, only including fields that are provided
+        const updateData: any = {
+          firstName: first_name || null,
+          lastName: last_name || null,
+          photoUrl: image_url || null,
+          phoneNumber: phoneNumber || null,
+        }
+        
+        // Only update email and username if they are provided
+        if (emailAddress) {
+          updateData.email = emailAddress
+        }
+        if (username) {
+          updateData.username = username
+        }
+        
         // Update user in database
         await prisma.user.update({
           where: { clerkUserId: id },
-          data: {
-            email: emailAddress || undefined,
-            username: username || undefined,
-            firstName: first_name || null,
-            lastName: last_name || null,
-            photoUrl: image_url || null,
-            phoneNumber: phoneNumber || null,
-          },
+          data: updateData,
         })
 
         console.log(`User updated: ${id}`)
