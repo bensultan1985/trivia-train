@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
+type SortOption = "newest" | "oldest" | "correct" | "incorrect";
+
 interface HistoryItem {
   id: string;
   questionId: string;
@@ -36,43 +38,69 @@ interface Pagination {
 export default function HistoryPage() {
   const { isSignedIn, isLoaded } = useUser();
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [topLevelCategories, setTopLevelCategories] = useState<string[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
     limit: 20,
     totalCount: 0,
     totalPages: 0,
   });
-  const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [topCategory, setTopCategory] = useState<string>("");
+  const [sort, setSort] = useState<SortOption>("newest");
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
   const [clearingAll, setClearingAll] = useState(false);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+    }, 250);
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
       fetchHistory();
     } else if (isLoaded && !isSignedIn) {
-      setLoading(false);
+      setInitialLoading(false);
     }
-  }, [isLoaded, isSignedIn, pagination.page, search]);
+  }, [
+    isLoaded,
+    isSignedIn,
+    pagination.page,
+    pagination.limit,
+    debouncedSearch,
+    topCategory,
+    sort,
+  ]);
 
   const fetchHistory = async () => {
     try {
-      setLoading(true);
+      setIsFetching(true);
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
-        search,
+        search: debouncedSearch,
+        ...(topCategory ? { topCategory } : {}),
+        sort,
       });
       const response = await fetch(`/api/history?${params}`);
       const data = await response.json();
-      
+
       if (response.ok) {
         setHistory(data.items);
         setPagination(data.pagination);
+        setTopLevelCategories(
+          Array.isArray(data.topLevelCategories) ? data.topLevelCategories : [],
+        );
       }
     } catch (error) {
       console.error("Error fetching history:", error);
     } finally {
-      setLoading(false);
+      setIsFetching(false);
+      setInitialLoading(false);
     }
   };
 
@@ -80,13 +108,13 @@ export default function HistoryPage() {
     if (!confirm("Are you sure you want to clear all your question history?")) {
       return;
     }
-    
+
     try {
       setClearingAll(true);
       const response = await fetch("/api/history", {
         method: "DELETE",
       });
-      
+
       if (response.ok) {
         setHistory([]);
         setPagination({ ...pagination, totalCount: 0, totalPages: 0 });
@@ -103,7 +131,7 @@ export default function HistoryPage() {
       const response = await fetch(`/api/history?id=${historyId}`, {
         method: "DELETE",
       });
-      
+
       if (response.ok) {
         // Refresh history
         fetchHistory();
@@ -114,11 +142,11 @@ export default function HistoryPage() {
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    setPagination({ ...pagination, page: 1 }); // Reset to first page on search
+    setSearchInput(e.target.value);
+    setPagination((prev) => ({ ...prev, page: 1 })); // Reset to first page on search
   };
 
-  if (!isLoaded || loading) {
+  if (!isLoaded || (isSignedIn && initialLoading)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-2xl">Loading...</div>
@@ -173,14 +201,56 @@ export default function HistoryPage() {
 
         {/* Search and Clear */}
         <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:items-center">
             <input
               type="text"
               placeholder="Search questions, categories, or answers..."
-              value={search}
+              value={searchInput}
               onChange={handleSearchChange}
-              className="flex-1 w-full md:w-auto px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+              className="md:col-span-6 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
             />
+
+            <select
+              value={topCategory}
+              onChange={(e) => {
+                setTopCategory(e.target.value);
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+              className="md:col-span-3 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+              aria-label="Filter by top-level category"
+            >
+              <option value="">All categories</option>
+              {topLevelCategories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={sort}
+              onChange={(e) => {
+                setSort(e.target.value as SortOption);
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+              className="md:col-span-2 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+              aria-label="Sort history"
+            >
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="correct">Correct first</option>
+              <option value="incorrect">Incorrect first</option>
+            </select>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between gap-3">
+            {isFetching ? (
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Loading…
+              </div>
+            ) : (
+              <div />
+            )}
             <button
               onClick={handleClearAll}
               disabled={clearingAll || history.length === 0}
@@ -195,11 +265,11 @@ export default function HistoryPage() {
         {history.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 text-center">
             <p className="text-xl text-gray-600 dark:text-gray-300">
-              {search
+              {searchInput
                 ? "No questions found matching your search."
                 : "You haven't answered any questions yet."}
             </p>
-            {!search && (
+            {!searchInput && (
               <Link
                 href="/training/target-practice"
                 className="inline-block mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
@@ -305,33 +375,45 @@ export default function HistoryPage() {
 
                       {item.questionContext && (
                         <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                          <span className="font-bold">More about this topic:</span>{" "}
+                          <span className="font-bold">
+                            More about this topic:
+                          </span>{" "}
                           {item.questionContext}
                         </div>
                       )}
 
                       <div className="mt-3 text-sm text-gray-700 dark:text-gray-300">
-                        <span className="font-bold">Your answer:</span> {selectedAnswer}
+                        <span className="font-bold">Your answer:</span>{" "}
+                        {selectedAnswer}
                       </div>
 
                       <div className="mt-4 space-y-3">
                         {answers.map((a, idx) => {
                           const hasContext =
-                            typeof a.context === "string" && a.context.trim().length > 0;
-                          const showRow = hasContext || a.isCorrect || a.isDistractor;
+                            typeof a.context === "string" &&
+                            a.context.trim().length > 0;
+                          const showRow =
+                            hasContext || a.isCorrect || a.isDistractor;
                           if (!showRow) return null;
 
                           return (
-                            <div key={idx} className="rounded-md p-3 bg-gray-50 dark:bg-gray-900/30">
+                            <div
+                              key={idx}
+                              className="rounded-md p-3 bg-gray-50 dark:bg-gray-900/30"
+                            >
                               {a.isCorrect ? (
                                 <div className="text-gray-800 dark:text-gray-100">
-                                  <span className="font-bold text-green-600">Correct:</span>{" "}
+                                  <span className="font-bold text-green-600">
+                                    Correct:
+                                  </span>{" "}
                                   {a.text}
                                 </div>
                               ) : (
                                 <div className="text-gray-800 dark:text-gray-100 flex items-start gap-2">
                                   <div>
-                                    <span className="font-bold text-orange-600">Incorrect:</span>{" "}
+                                    <span className="font-bold text-orange-600">
+                                      Incorrect:
+                                    </span>{" "}
                                     {a.text}
                                   </div>
                                   {a.isDistractor && (
@@ -349,7 +431,8 @@ export default function HistoryPage() {
 
                               {hasContext && (
                                 <div className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                                  <span className="font-bold">Context:</span> {a.context}
+                                  <span className="font-bold">Context:</span>{" "}
+                                  {a.context}
                                 </div>
                               )}
                             </div>
@@ -368,7 +451,10 @@ export default function HistoryPage() {
                 <div className="flex justify-center items-center gap-4">
                   <button
                     onClick={() =>
-                      setPagination({ ...pagination, page: pagination.page - 1 })
+                      setPagination({
+                        ...pagination,
+                        page: pagination.page - 1,
+                      })
                     }
                     disabled={pagination.page === 1}
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold rounded-lg transition-colors"
@@ -380,7 +466,10 @@ export default function HistoryPage() {
                   </span>
                   <button
                     onClick={() =>
-                      setPagination({ ...pagination, page: pagination.page + 1 })
+                      setPagination({
+                        ...pagination,
+                        page: pagination.page + 1,
+                      })
                     }
                     disabled={pagination.page === pagination.totalPages}
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold rounded-lg transition-colors"
