@@ -13,11 +13,11 @@ This guide will help you get the authentication system up and running quickly.
 
 In your Clerk dashboard:
 
-1. **Email & Username:**
+1. **Email, Username & Phone:**
    - Go to **Configure** → **User & Authentication** → **Email, Phone, Username**
    - Toggle ON: **Email address** (required)
-   - Toggle ON: **Username** (recommended)
-   - Toggle ON: **Phone number** (optional)
+   - Toggle ON: **Username** (required for username/password login)
+   - Toggle ON: **Phone number** (required for phone authentication)
    - Click **Save**
 
 2. **Social Connections:**
@@ -27,7 +27,7 @@ In your Clerk dashboard:
    - Enable **X** (toggle ON)
    - Click **Save**
 
-> **Note:** Google and X OAuth require additional setup with their developer consoles. You can skip this initially and test with email/username first.
+> **Note:** Google and X OAuth require additional setup with their developer consoles. See step-by-step OAuth setup in CLERK_SETUP.md.
 
 ## Step 3: Get Your API Keys (1 minute)
 

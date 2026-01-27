@@ -15,13 +15,46 @@ In your Clerk dashboard:
 1. Navigate to **User & Authentication** → **Email, Phone, Username**
 2. Enable the following:
    - ✅ **Email address** (required)
-   - ✅ **Username** (optional but recommended)
-   - ✅ **Phone number** (optional)
+   - ✅ **Username** (required - enables username/password login)
+   - ✅ **Phone number** (required - enables phone authentication)
 
 3. Navigate to **User & Authentication** → **Social Connections**
 4. Enable:
    - ✅ **Google** (OAuth)
    - ✅ **X (Twitter)** (OAuth)
+
+> **Important:** All five authentication methods (email, username/password, phone, Google, X) should be enabled to meet the requirements.
+
+### Setting Up Google OAuth
+
+1. In Clerk dashboard, click on **Google** under Social Connections
+2. You have two options:
+   - **Use Clerk's Development Keys** (quick start for testing)
+   - **Use your own Google OAuth credentials** (required for production)
+3. For custom setup:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select existing one
+   - Enable Google+ API
+   - Create OAuth 2.0 credentials
+   - Add authorized redirect URIs from Clerk dashboard
+   - Copy Client ID and Client Secret to Clerk
+4. Click **Save**
+
+### Setting Up X (Twitter) OAuth
+
+1. In Clerk dashboard, click on **X** under Social Connections
+2. You have two options:
+   - **Use Clerk's Development Keys** (quick start for testing)
+   - **Use your own X OAuth credentials** (required for production)
+3. For custom setup:
+   - Go to [X Developer Portal](https://developer.twitter.com/)
+   - Create a new app or use existing one
+   - Get your API Key and API Secret Key
+   - Add callback URLs from Clerk dashboard
+   - Copy API Key and Secret to Clerk
+4. Click **Save**
+
+> **Tip:** Start with Clerk's development keys for quick testing, then switch to your own credentials before going to production.
 
 ## 3. Get Your API Keys
 
@@ -72,19 +105,22 @@ You can customize the Clerk components to match your app's theme:
 1. Start your development server: `npm run dev`
 2. Visit `http://localhost:3000`
 3. Click **Register** to create a new account
-4. Try signing in with:
-   - Email and password
-   - Username and password
-   - Google (if configured)
-   - X/Twitter (if configured)
+4. Try signing in with all five authentication methods:
+   - ✅ Email and password
+   - ✅ Username and password
+   - ✅ Phone number (SMS verification)
+   - ✅ Google (if configured)
+   - ✅ X/Twitter (if configured)
 5. Verify your name appears in the header
 6. Test the logout functionality
+
+See `TESTING_AUTH.md` for detailed testing instructions for each authentication method.
 
 ## Authentication Features
 
 ✅ **Email/Password Authentication**: Users can register and login with email
-✅ **Username/Password Authentication**: Users can register and login with username
-✅ **Phone Number Authentication**: Users can register and login with phone number (if enabled)
+✅ **Username/Password Authentication**: Users can register and login with username  
+✅ **Phone Number Authentication**: Users can register and login with phone number
 ✅ **Google OAuth**: One-click sign-in with Google
 ✅ **X (Twitter) OAuth**: One-click sign-in with X/Twitter
 ✅ **User Profile Display**: Shows first name or username in header

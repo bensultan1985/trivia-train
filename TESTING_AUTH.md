@@ -23,8 +23,8 @@ Before testing, you must:
 5. Fill in the registration form:
    - Email address
    - Password (Clerk enforces password requirements)
-   - First name (optional but recommended - this will show in header)
-   - Username (optional)
+   - First name (recommended - this will show in header)
+   - Username (required field - enables username/password login)
 6. Complete the email verification if required
 7. After successful registration, you should be redirected to the home page
 
@@ -45,23 +45,38 @@ Before testing, you must:
 3. Enter your email and password
 4. After successful login, you should see your name in the header again
 
-### 2. Username/Password Login
+### 2. Username/Password Login (Required Feature)
 
 **Test with Username:**
-1. If you set up a username during registration, try logging out
-2. Click Login and try signing in with your username instead of email
-3. Verify you can successfully log in with username + password
+1. During registration, ensure you set up a username
+2. After logging out, click Login
+3. Try signing in with your username instead of email
+4. Enter your password
+5. Verify you can successfully log in with username + password
+6. Check that your username or first name appears in the header
 
-### 3. Phone Number Authentication
+### 3. Phone Number Authentication (Required Feature)
 
-**Note:** Phone authentication requires additional Clerk configuration.
+**Prerequisites:**
+- Phone number authentication must be enabled in Clerk dashboard
+- SMS verification must be configured
 
-1. During registration, choose "Use phone" option
-2. Enter your phone number
-3. Complete SMS verification
-4. Verify login works with phone number
+**Test Registration with Phone:**
+1. Navigate to the sign-up page
+2. Choose "Use phone" option (if available as alternate method)
+3. Enter your phone number with country code
+4. Complete SMS verification by entering the code
+5. Set your password and complete registration
+6. Verify you're logged in and your info appears in header
 
-### 4. Google OAuth
+**Test Login with Phone:**
+1. Log out if logged in
+2. Navigate to sign-in page
+3. Enter your phone number
+4. Enter your password (or complete SMS verification if configured)
+5. Verify successful login
+
+### 4. Google OAuth (Required Feature)
 
 **Requirements:**
 - Google OAuth must be enabled in Clerk dashboard
@@ -74,18 +89,19 @@ Before testing, you must:
 4. Verify you're redirected back and logged in
 5. Check that your Google name appears in the header
 
-### 5. X (Twitter) OAuth
+### 5. X (Twitter) OAuth (Required Feature)
 
 **Requirements:**
 - X OAuth must be enabled in Clerk dashboard
-- You must configure the X OAuth credentials
+- You must configure the X OAuth credentials (see CLERK_SETUP.md)
 
 **Test:**
 1. Navigate to sign-up or sign-in page
-2. Click "Continue with X" (or Twitter icon)
-3. Complete X authentication flow
-4. Verify you're redirected back and logged in
-5. Check that your X username/name appears in the header
+2. Look for "Continue with X" or Twitter icon button
+3. Click the X/Twitter authentication button
+4. Complete X authentication flow (authorize the app)
+5. Verify you're redirected back to the app and logged in
+6. Check that your X username or display name appears in the header
 
 ### 6. Old Route Redirects
 
