@@ -2,6 +2,8 @@
 
 This guide will help you get the authentication system up and running quickly.
 
+> **⚠️ Important:** The sign-in/sign-up pages will ONLY show authentication methods you enable in the Clerk Dashboard. If you only see email and Google, it means you need to enable phone and X/Twitter in your dashboard settings (see Step 2 below).
+
 ## Step 1: Create Clerk Account (5 minutes)
 
 1. Go to https://clerk.com
@@ -11,23 +13,26 @@ This guide will help you get the authentication system up and running quickly.
 
 ## Step 2: Enable Authentication Methods (3 minutes)
 
+**⚠️ CRITICAL STEP:** The authentication buttons that appear on your sign-in/sign-up pages are controlled by these settings. You must enable all of them here.
+
 In your Clerk dashboard:
 
 1. **Email, Username & Phone:**
    - Go to **Configure** → **User & Authentication** → **Email, Phone, Username**
-   - Toggle ON: **Email address** (required)
-   - Toggle ON: **Username** (required for username/password login)
-   - Toggle ON: **Phone number** (required for phone authentication)
+   - Toggle ON: **Email address** ✅
+   - Toggle ON: **Username** ✅ (enables username/password login)
+   - Toggle ON: **Phone number** ✅ (enables phone/SMS authentication)
    - Click **Save**
 
-2. **Social Connections:**
-   - Go to **Configure** → **Social Connections**
-   - Click **Add connection**
-   - Enable **Google** (toggle ON)
-   - Enable **X** (toggle ON)
+2. **Social Connections (Google and X):**
+   - Go to **Configure** → **SSO Connections** (or **Social Connections**)
+   - Find **Google** and toggle ON ✅
+   - Find **X** and toggle ON ✅
    - Click **Save**
 
-> **Note:** Google and X OAuth require additional setup with their developer consoles. See step-by-step OAuth setup in CLERK_SETUP.md.
+> **For Development:** You can use Clerk's shared OAuth credentials by simply toggling providers ON. The authentication buttons will appear immediately after enabling them.
+
+> **For Production:** You'll need to configure your own OAuth credentials. See detailed OAuth setup in CLERK_SETUP.md.
 
 ## Step 3: Get Your API Keys (1 minute)
 

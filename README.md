@@ -5,6 +5,7 @@ A game show and trivia training app for people who want to win.
 ## Features
 
 - **User Authentication**: Secure authentication powered by Clerk with support for email, username/password, phone number, Google, and X (Twitter)
+  - ⚠️ **Note:** Authentication methods are configured in the Clerk Dashboard, not in code. See [QUICK_START.md](QUICK_START.md) for setup instructions.
 - **Responsive Design**: Mobile-friendly with collapsible navigation
 - **Training Modes**: Three different training types to improve your trivia skills
   - ⚡ Speed Training: Rapid-fire questions for quick thinking

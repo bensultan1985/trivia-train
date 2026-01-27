@@ -2,6 +2,15 @@
 
 This application uses Clerk for authentication. Follow these steps to set up Clerk for your trivia-train application.
 
+## 🔑 How Authentication Methods Appear
+
+**Important:** The sign-in and sign-up pages use Clerk's prebuilt components that **automatically display** all authentication methods you enable in the Clerk Dashboard. 
+
+- ✅ Enable a method in Clerk Dashboard → It appears on the login/register screens
+- ❌ Don't enable a method → It won't appear
+
+**You must configure these settings in your Clerk Dashboard for the authentication buttons to show up.**
+
 ## 1. Create a Clerk Account
 
 1. Go to [https://clerk.com](https://clerk.com)
@@ -130,6 +139,28 @@ See `TESTING_AUTH.md` for detailed testing instructions for each authentication 
 
 ## Troubleshooting
 
+### I Only See Email and Google on the Sign-In/Sign-Up Pages
+
+**This is the most common issue!** The authentication buttons that appear on the sign-in and sign-up screens are controlled **entirely by your Clerk Dashboard settings**, not by code.
+
+**Solution:**
+1. Go to your Clerk Dashboard at https://dashboard.clerk.com
+2. Select your application
+3. Navigate to **Configure** → **User & Authentication** → **Email, Phone, Username**
+4. Toggle ON:
+   - **Email address** ✅
+   - **Username** ✅ 
+   - **Phone number** ✅ (This enables phone/SMS authentication)
+5. Click **Save**
+6. Navigate to **Configure** → **SSO Connections** (or **Social Connections**)
+7. Enable:
+   - **Google** ✅ (toggle ON or click to configure)
+   - **X** ✅ (toggle ON or click to configure)
+8. Click **Save**
+9. Refresh your application - you should now see all authentication options!
+
+**Note:** The prebuilt `<SignIn />` and `<SignUp />` components automatically detect and display all enabled authentication methods. There is no additional code configuration needed.
+
 ### Missing Environment Variables
 If you see errors about missing Clerk keys, make sure:
 - Your `.env.local` file exists in the root directory
@@ -143,8 +174,9 @@ If you see errors about missing Clerk keys, make sure:
 - Check the browser console for specific error messages
 
 ### OAuth Providers Not Showing
-- Make sure you've enabled Google and X in the Clerk dashboard
-- Complete the OAuth configuration for each provider (may require developer accounts with Google and Twitter)
+- Make sure you've enabled Google and X in the Clerk dashboard under SSO/Social Connections
+- For development: You can use Clerk's shared OAuth credentials by simply toggling the provider ON
+- For production: You'll need to configure your own OAuth credentials with Google and X developer consoles
 
 ## Additional Resources
 
