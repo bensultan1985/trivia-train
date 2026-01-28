@@ -1,5 +1,7 @@
 export const jeopardy = {
-  title: "Jeopardy! Winning Strategy Guide",
+  title: "Jeopardy!",
+  guideCoverUrl:
+    "https://upload.wikimedia.org/wikipedia/commons/archive/c/ce/20141115075723%21Jeopardy%21_logo.png",
   subtitle: "Advanced Tactics Used by Champions",
   gameShow: "Jeopardy!",
   chapters: [
@@ -28,12 +30,12 @@ export const jeopardy = {
         },
         {
           sectionType: "strategy-real-example",
-          header: "James Holzhauer’s Category Jumping",
+          header: "Daily Double Hunting & The Modern Meta",
           content:
-            "<p>James Holzhauer aggressively jumped between categories, targeting statistically likely Daily Double locations.</p><p>This prevented opponents from settling into categories and forced them into reactive play.</p>",
+            "<p>Modern elite play prioritizes Daily Doubles because they are the highest-leverage scoring events besides Final Jeopardy.</p><p>Data-driven analyses of games show Daily Doubles tend to appear more often in certain board regions (especially away from the top row), and champions combine fast clue selection with targeted hunting to find them earlier.</p>",
           mediaType: "external",
           mediaUrl:
-            "https://www.jeopardy.com/jbuzz/contestants/james-holzhauers-winning-strategy-explained",
+            "https://fivethirtyeight.com/features/the-man-who-solved-jeopardy/",
         },
       ],
     },
@@ -48,11 +50,12 @@ export const jeopardy = {
         },
         {
           sectionType: "strategy-real-example",
-          header: "Aggressive vs Conservative Wagering",
+          header: "Build a Stack, Then Strike",
           content:
-            "<p>Champions often wager aggressively when:</p><ul><li>The category aligns with strengths</li><li>They are early in the round</li><li>They want to build an unreachable lead</li></ul><p>Conservative wagers are more common late in games when protecting a lock.</p>",
-          mediaType: "video",
-          mediaUrl: "https://www.youtube.com/watch?v=0Wi5kJXq1Jg",
+            "<p>A common high-level approach:</p><ol><li><b>Build a stack</b> (raise your score enough that a big wager matters)</li><li><b>Hunt</b> (jump to likely Daily Double areas)</li><li><b>Wager with purpose</b> (use the DD to create separation or recover)</li></ol><p>Some champions explicitly avoid finding a Daily Double too early if they can’t yet wager enough to create meaningful advantage.</p>",
+          mediaType: "external",
+          mediaUrl:
+            "https://fivethirtyeight.com/features/the-man-who-solved-jeopardy/",
         },
       ],
     },
@@ -67,9 +70,12 @@ export const jeopardy = {
         },
         {
           sectionType: "strategy-real-example",
-          header: "Anticipation Timing",
+          header: "Timing: Buzz on the Lights, Not the Words",
           content:
-            "<p>Top players buzz in by anticipating the end of the clue, not reacting after it finishes.</p><p>This is a learned rhythm skill developed through repetition and audio-based practice.</p>",
+            "<p>On set, contestants cannot successfully ring in until the system is armed, which happens when the host finishes reading the clue.</p><ul><li>The board-side indicator lights show the moment the system is live (not visible to TV viewers)</li><li>Buzzing too early triggers a short lockout penalty</li><li>Practice is about rhythm: anticipating the end while syncing to the enable moment</li></ul>",
+          mediaType: "external",
+          mediaUrl:
+            "https://www.jeopardy.com/jbuzz/behind-scenes/how-does-jeopardy-buzzer-work",
         },
       ],
     },
@@ -80,13 +86,17 @@ export const jeopardy = {
           sectionType: "strategy-real-example",
           header: "Cover Bets Explained",
           content:
-            "<p>A cover bet ensures you win if the second-place contestant answers correctly.</p><p>Standard rule:</p><pre>Wager = (Second Place Score × 2) − Your Score + 1</pre><p>Failing to cover is one of the most common strategic errors.</p>",
+            "<p>A cover bet ensures you win if the second-place contestant answers correctly.</p><p>Standard idea:</p><pre>To cover 2nd: wager enough so (Your Score + Wager) &gt; 2 × (Second Place Score)</pre><p>Practically, leaders often compute the minimum cover amount and then choose whether to add extra based on 3rd place and other risks.</p>",
+          mediaType: "external",
+          mediaUrl: "https://thejeopardyfan.com/final-jeopardy-betting",
         },
         {
           sectionType: "strategy-real-example",
-          header: "When Not to Cover",
+          header: "Know the Post-2014 Tiebreaker Reality",
           content:
-            "<p>Advanced players sometimes avoid cover bets when:</p><ul><li>Second place is likely to wager incorrectly</li><li>The category is extremely volatile</li><li>They anticipate a triple-stumper</li></ul><p>This is high-risk, high-reward play.</p>",
+            "<p>Jeopardy’s approach to ties changed: ties after Final Jeopardy are no longer left as co-champions; they are broken by a tiebreaker clue.</p><p>This affects certain edge-case wagers where “bet to tie” used to be optimal.</p>",
+          mediaType: "external",
+          mediaUrl: "https://thejeopardyfan.com/final-jeopardy-betting",
         },
       ],
     },
