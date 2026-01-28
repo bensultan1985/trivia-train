@@ -1,21 +1,73 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { usePathname } from "next/navigation";
+
+import {
+  IconBook,
+  IconDashboard,
+  IconGameBuilder,
+  IconHostGame,
+  IconTarget,
+} from "@/components/icons";
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
 
-  const navItems = [
-    { href: "/", label: "Home", icon: "🏠" },
-    { href: "/training/target-practice", label: "Target Practice", icon: "🎯" },
-    { href: "/training/speed", label: "Speed Training", icon: "⚡" },
-    { href: "/training/accuracy", label: "Accuracy Training", icon: "✓" },
-    { href: "/training/category", label: "Category Training", icon: "📚" },
-    { href: "/history", label: "Question History", icon: "📖" },
+  const navItems: Array<
+    | { type: "header"; label: string }
+    | { type: "link"; href: string; label: string; icon: ReactNode }
+  > = [
+    {
+      type: "link",
+      href: "/dashboard",
+      label: "Dashboard",
+      icon: <IconDashboard />,
+    },
+    { type: "header", label: "Contestant" },
+    // { href: "/", label: "Home", icon: <IconHome /> },
+    {
+      type: "link",
+      href: "/training/target-practice",
+      label: "Target Practice",
+      icon: <IconTarget />,
+    },
+    // { href: "/training/speed", label: "Speed Training", icon: <IconBolt /> },
+    // {
+    //   href: "/training/accuracy",
+    //   label: "Accuracy Training",
+    //   icon: <IconCheck />,
+    // },
+    // {
+    //   href: "/training/category",
+    //   label: "Category Training",
+    //   icon: <IconGrid />,
+    // },
+    {
+      type: "link",
+      href: "/history",
+      label: "Question History",
+      icon: <IconBook />,
+    },
+    { type: "header", label: "Host" },
+    {
+      type: "link",
+      href: "/host-game",
+      label: "Host Game",
+      icon: <IconHostGame />,
+    },
+    {
+      type: "link",
+      href: "/game-builder",
+      label: "Game Builder",
+      icon: <IconGameBuilder />,
+    },
   ];
+
+  const isHostHref = (href: string) =>
+    href === "/host-game" || href === "/game-builder";
 
   return (
     <>
@@ -61,22 +113,48 @@ export default function Sidebar() {
           <nav className="flex-1 p-4">
             <ul className="space-y-2">
               {navItems.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={`
+                <li
+                  key={
+                    item.type === "header" ? `header:${item.label}` : item.href
+                  }
+                >
+                  {item.type === "header" ? (
+                    isCollapsed ? null : (
+                      <div
+                        className={`px-3 pt-2
+                          mb-3 text-xs font-semibold uppercase tracking-wide ${
+                            item.label === "Host"
+                              ? "text-orange-400"
+                              : item.label === "Contestant"
+                                ? "text-blue-500"
+                                : "text-gray-500"
+                          }`}
+                      >
+                        {item.label}
+                      </div>
+                    )
+                  ) : (
+                    <Link
+                      href={item.href}
+                      aria-label={item.label}
+                      className={`
                       flex items-center gap-3 p-3 rounded-lg transition-colors
                       ${
                         pathname === item.href
-                          ? "bg-blue-500 text-white shadow ring-1 ring-blue-900/20"
-                          : "hover:bg-blue-300 hover:text-white text-black/80"
+                          ? isHostHref(item.href)
+                            ? "bg-orange-400 text-white shadow ring-1 ring-orange-900/20"
+                            : "bg-blue-500 text-white shadow ring-1 ring-blue-900/20"
+                          : isHostHref(item.href)
+                            ? "hover:bg-orange-200 hover:text-white text-black/80"
+                            : "hover:bg-blue-300 hover:text-white text-black/80"
                       }
                       ${isCollapsed ? "justify-center" : ""}
                     `}
-                  >
-                    <span className="text-xl">{item.icon}</span>
-                    {!isCollapsed && <span>{item.label}</span>}
-                  </Link>
+                    >
+                      <span className="shrink-0">{item.icon}</span>
+                      {!isCollapsed && <span>{item.label}</span>}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
