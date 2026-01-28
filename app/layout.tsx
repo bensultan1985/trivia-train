@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
+import Footer from "@/components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
@@ -23,7 +24,12 @@ export default async function RootLayout({
             <Header />
             <div className="flex flex-1 overflow-hidden">
               <Sidebar />
-              <main className="flex-1 overflow-y-auto lg:ml-64">{children}</main>
+              <main className="flex-1 overflow-y-auto lg:ml-64">
+                <div className="min-h-full flex flex-col">
+                  <div className="flex-1">{children}</div>
+                  <Footer />
+                </div>
+              </main>
             </div>
           </div>
         </body>

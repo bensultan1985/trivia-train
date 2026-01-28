@@ -66,6 +66,9 @@ export default function Sidebar() {
     },
   ];
 
+  const isHostHref = (href: string) =>
+    href === "/host-game" || href === "/game-builder";
+
   return (
     <>
       {/* Mobile menu button */}
@@ -117,7 +120,16 @@ export default function Sidebar() {
                 >
                   {item.type === "header" ? (
                     isCollapsed ? null : (
-                      <div className="px-3 pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      <div
+                        className={`px-3 pt-2
+                          mb-3 text-xs font-semibold uppercase tracking-wide ${
+                            item.label === "Host"
+                              ? "text-orange-400"
+                              : item.label === "Contestant"
+                                ? "text-blue-500"
+                                : "text-gray-500"
+                          }`}
+                      >
                         {item.label}
                       </div>
                     )
@@ -129,8 +141,12 @@ export default function Sidebar() {
                       flex items-center gap-3 p-3 rounded-lg transition-colors
                       ${
                         pathname === item.href
-                          ? "bg-blue-500 text-white shadow ring-1 ring-blue-900/20"
-                          : "hover:bg-blue-300 hover:text-white text-black/80"
+                          ? isHostHref(item.href)
+                            ? "bg-orange-400 text-white shadow ring-1 ring-orange-900/20"
+                            : "bg-blue-500 text-white shadow ring-1 ring-blue-900/20"
+                          : isHostHref(item.href)
+                            ? "hover:bg-orange-200 hover:text-white text-black/80"
+                            : "hover:bg-blue-300 hover:text-white text-black/80"
                       }
                       ${isCollapsed ? "justify-center" : ""}
                     `}

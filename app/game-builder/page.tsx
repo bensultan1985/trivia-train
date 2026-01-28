@@ -3,8 +3,8 @@ import { IconGameBuilder } from "@/components/icons";
 export default async function GameBuilderPage() {
   return (
     <div className="p-8">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8 rounded-lg bg-blue-500 p-8 text-white shadow-lg">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-0 rounded-lg bg-orange-400 p-6 pb-2 text-white shadow-lg">
           <div className="mb-4 flex items-center gap-4">
             <span className="shrink-0">
               <IconGameBuilder className="h-16 w-16" />
