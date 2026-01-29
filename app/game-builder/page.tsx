@@ -115,36 +115,47 @@ export default function GameBuilderPage() {
   };
 
   const shuffleAnswers = () => {
-    const shuffled = questions.map((q) => {
-      // Build answers array with their indices
+    const shuffled = questions.map((question) => {
+      // Build answers array with their indices, only include non-empty answers
       const answers = [
-        { text: q.answer1, index: 1 },
-        { text: q.answer2, index: 2 },
-        { text: q.answer3, index: 3 },
-        { text: q.answer4, index: 4 },
-      ].filter((a) => a.text); // Only include non-empty answers
+        { text: question.answer1, index: 1 },
+        { text: question.answer2, index: 2 },
+        question.answer3 ? { text: question.answer3, index: 3 } : null,
+        question.answer4 ? { text: question.answer4, index: 4 } : null,
+      ].filter((a): a is { text: string; index: number } => a !== null && a.text.trim() !== "");
 
-      // Shuffle
+      // Don't shuffle if there are fewer than 2 answers
+      if (answers.length < 2) {
+        return question;
+      }
+
+      // Find the correct answer text before shuffling
+      const correctAnswerText =
+        question.correctAnswer === 1
+          ? question.answer1
+          : question.correctAnswer === 2
+            ? question.answer2
+            : question.correctAnswer === 3
+              ? question.answer3
+              : question.answer4;
+
+      // If correct answer is empty, don't shuffle this question
+      if (!correctAnswerText || correctAnswerText.trim() === "") {
+        return question;
+      }
+
+      // Shuffle the answers array
       for (let i = answers.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [answers[i], answers[j]] = [answers[j], answers[i]];
       }
 
-      // Find where correct answer ended up
-      const correctAnswerText =
-        q.correctAnswer === 1
-          ? q.answer1
-          : q.correctAnswer === 2
-            ? q.answer2
-            : q.correctAnswer === 3
-              ? q.answer3
-              : q.answer4;
-
+      // Find where correct answer ended up after shuffling
       const newCorrectIndex =
         answers.findIndex((a) => a.text === correctAnswerText) + 1;
 
       return {
-        ...q,
+        ...question,
         answer1: answers[0]?.text || "",
         answer2: answers[1]?.text || "",
         answer3: answers[2]?.text || "",
@@ -450,6 +461,7 @@ export default function GameBuilderPage() {
                           updateQuestion(index, "correctAnswer", 1)
                         }
                         className="mt-1"
+                        aria-label="Select answer 1 as correct"
                       />
                       <input
                         type="text"
@@ -477,6 +489,7 @@ export default function GameBuilderPage() {
                           updateQuestion(index, "correctAnswer", 2)
                         }
                         className="mt-1"
+                        aria-label="Select answer 2 as correct"
                       />
                       <input
                         type="text"
@@ -502,7 +515,9 @@ export default function GameBuilderPage() {
                         onChange={() =>
                           updateQuestion(index, "correctAnswer", 3)
                         }
+                        disabled={!q.answer3 || q.answer3.trim() === ""}
                         className="mt-1"
+                        aria-label="Select answer 3 as correct"
                       />
                       <input
                         type="text"
@@ -528,7 +543,9 @@ export default function GameBuilderPage() {
                         onChange={() =>
                           updateQuestion(index, "correctAnswer", 4)
                         }
+                        disabled={!q.answer4 || q.answer4.trim() === ""}
                         className="mt-1"
+                        aria-label="Select answer 4 as correct"
                       />
                       <input
                         type="text"

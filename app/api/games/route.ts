@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isAuthenticated } from "@/lib/auth";
 
+interface QuestionInput {
+  question: string;
+  answer1: string;
+  answer2: string;
+  answer3?: string;
+  answer4?: string;
+  correctAnswer: number;
+}
+
 // GET /api/games - List all games for the authenticated user
 export async function GET() {
   try {
@@ -70,16 +79,31 @@ export async function POST(request: Request) {
 
     // Validate each question
     for (let i = 0; i < questions.length; i++) {
-      const q = questions[i];
-      if (!q.question || !q.answer1 || !q.answer2) {
+      const question = questions[i];
+      if (!question.question || !question.answer1 || !question.answer2) {
         return NextResponse.json(
           { error: `Question ${i + 1} is missing required fields` },
           { status: 400 },
         );
       }
-      if (!q.correctAnswer || q.correctAnswer < 1 || q.correctAnswer > 4) {
+      if (!question.correctAnswer || question.correctAnswer < 1 || question.correctAnswer > 4) {
         return NextResponse.json(
           { error: `Question ${i + 1} has invalid correct answer` },
+          { status: 400 },
+        );
+      }
+      // Validate that the selected correct answer has content
+      const selectedAnswer =
+        question.correctAnswer === 1
+          ? question.answer1
+          : question.correctAnswer === 2
+            ? question.answer2
+            : question.correctAnswer === 3
+              ? question.answer3
+              : question.answer4;
+      if (!selectedAnswer || selectedAnswer.trim() === "") {
+        return NextResponse.json(
+          { error: `Question ${i + 1}: The selected correct answer is empty` },
           { status: 400 },
         );
       }
@@ -90,13 +114,13 @@ export async function POST(request: Request) {
         clerkUserId: user.id,
         name: name.trim(),
         questions: {
-          create: questions.map((q: any, index: number) => ({
-            question: q.question,
-            answer1: q.answer1,
-            answer2: q.answer2,
-            answer3: q.answer3 || null,
-            answer4: q.answer4 || null,
-            correctAnswer: q.correctAnswer,
+          create: questions.map((question: QuestionInput, index: number) => ({
+            question: question.question,
+            answer1: question.answer1,
+            answer2: question.answer2,
+            answer3: question.answer3 || null,
+            answer4: question.answer4 || null,
+            correctAnswer: question.correctAnswer,
             orderIndex: index,
           })),
         },
@@ -161,16 +185,31 @@ export async function PUT(request: Request) {
 
     // Validate each question
     for (let i = 0; i < questions.length; i++) {
-      const q = questions[i];
-      if (!q.question || !q.answer1 || !q.answer2) {
+      const question = questions[i];
+      if (!question.question || !question.answer1 || !question.answer2) {
         return NextResponse.json(
           { error: `Question ${i + 1} is missing required fields` },
           { status: 400 },
         );
       }
-      if (!q.correctAnswer || q.correctAnswer < 1 || q.correctAnswer > 4) {
+      if (!question.correctAnswer || question.correctAnswer < 1 || question.correctAnswer > 4) {
         return NextResponse.json(
           { error: `Question ${i + 1} has invalid correct answer` },
+          { status: 400 },
+        );
+      }
+      // Validate that the selected correct answer has content
+      const selectedAnswer =
+        question.correctAnswer === 1
+          ? question.answer1
+          : question.correctAnswer === 2
+            ? question.answer2
+            : question.correctAnswer === 3
+              ? question.answer3
+              : question.answer4;
+      if (!selectedAnswer || selectedAnswer.trim() === "") {
+        return NextResponse.json(
+          { error: `Question ${i + 1}: The selected correct answer is empty` },
           { status: 400 },
         );
       }
@@ -205,13 +244,13 @@ export async function PUT(request: Request) {
       data: {
         name: name.trim(),
         questions: {
-          create: questions.map((q: any, index: number) => ({
-            question: q.question,
-            answer1: q.answer1,
-            answer2: q.answer2,
-            answer3: q.answer3 || null,
-            answer4: q.answer4 || null,
-            correctAnswer: q.correctAnswer,
+          create: questions.map((question: QuestionInput, index: number) => ({
+            question: question.question,
+            answer1: question.answer1,
+            answer2: question.answer2,
+            answer3: question.answer3 || null,
+            answer4: question.answer4 || null,
+            correctAnswer: question.correctAnswer,
             orderIndex: index,
           })),
         },
