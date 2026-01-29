@@ -53,6 +53,42 @@ type BatchRequestMeta = {
 
 type CommonKnowledgeUserDateRange = [null] | [number] | [number, number];
 
+// ------------------------------
+// Obscurity steering (easy to disable)
+//
+// 1 = extremely well-known (e.g., “Michael Jackson made Thriller”)
+// 10 = very niche/obscure (≈1% of the population knows it)
+// Probability constraints:
+// - 1 and 10 < 2%
+// - 2 and 9 < 5%
+// - Most questions should land in the middle.
+//
+// To disable, set enabled:false (or comment out this whole block and the
+// `obscurityBlock` usage in buildPrompt).
+const OBSCURITY_CONTROL = {
+  enabled: true,
+  // Weights for levels 1..10. Must sum to 1.
+  weights: [0.015, 0.04, 0.11, 0.15, 0.17, 0.17, 0.15, 0.14, 0.04, 0.015],
+} as const;
+
+function sampleWeightedIndex(weights: readonly number[]): number {
+  const r = Math.random();
+  let acc = 0;
+  for (let i = 0; i < weights.length; i++) {
+    const w = weights[i] ?? 0;
+    acc += w;
+    if (r < acc) return i;
+  }
+  // In case of floating point drift, fall back to last.
+  return Math.max(0, weights.length - 1);
+}
+
+function sampleObscurityLevel(): number {
+  // Returns an integer in [1, 10]
+  const idx = sampleWeightedIndex(OBSCURITY_CONTROL.weights);
+  return Math.min(10, Math.max(1, idx + 1));
+}
+
 function coerceYear(value: unknown): number | null {
   if (value == null) return null;
   if (typeof value === "number") {
@@ -207,6 +243,22 @@ function buildPrompt(
     ? `any topic related to "${leafKey}" (you choose a specific example)`
     : `"${categoryItem}"`;
 
+  const obscurityLevel = OBSCURITY_CONTROL.enabled
+    ? sampleObscurityLevel()
+    : null;
+
+  const obscurityBlock = obscurityLevel
+    ? `
+
+Obscurity target (1-10): ${obscurityLevel}
+- 1 = extremely well-known (e.g., “Michael Jackson made Thriller”)
+- 10 = very niche/obscure (≈1% of the population knows it)
+Guidance:
+- Match the target as best you can while staying factual.
+- Do not mention the obscurity number in the question or answers.
+`
+    : "";
+
   const distractorSection = options.includeDistractors
     ? `
 
@@ -224,7 +276,7 @@ Optional (encouraged, but not required):
 `
     : "";
 
-  return `Generate a trivia question about ${topicPhrase} in the category "${categoryPath}".
+  return `Generate a trivia question about ${topicPhrase} in the category "${categoryPath}".${obscurityBlock}
 
 ${isWildcardTopic ? 'Important: "**" is a wildcard marker in our category list. Pick a concrete topic and do NOT mention "**" in the question or answers.' : ""}
 
@@ -632,7 +684,7 @@ async function generateTriviaQuestions(
   );
 
   const seenFingerprints = new Set<string>();
-  const maxAttemptsPerQuestion = 5;
+  const maxAttemptsPerQuestion = 2;
 
   let successCount = 0;
   let failureCount = 0;
