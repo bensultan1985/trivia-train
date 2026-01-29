@@ -298,7 +298,7 @@ export default async function StudyGuidesPage({
           </div>
           {!category ? (
             <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-              Start with History to see a full guide.
+              {/* Start with History to see a full guide. */}
             </p>
           ) : null}
         </div>
@@ -364,10 +364,10 @@ export default async function StudyGuidesPage({
           ) : (
             <div>
               <h2 className="mb-4 text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                Coming Soon!
+                Select a category above to see available guides.
               </h2>
               <p className="text-gray-600 dark:text-gray-300">
-                Study guides will live here.
+                {/* Check out one of the study guides above. */}
               </p>
             </div>
           )}
