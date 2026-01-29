@@ -59,27 +59,34 @@ function renderSection(section: any) {
 
   if (section.sectionType === "list") {
     return (
-      <div className="space-y-3">
-        {section.subHeader ? (
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            {section.subHeader}
-          </p>
-        ) : null}
-        <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-200 leading-relaxed">
-          {(section.list ?? []).map((item: any, idx: number) => (
-            <li key={idx} dangerouslySetInnerHTML={{ __html: item.li ?? "" }} />
-          ))}
-        </ul>
+      <div className="space-y-4 rounded-xl bg-orange-100 p-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10">
+        <div className="space-y-3">
+          {section.subHeader ? (
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              {section.subHeader}
+            </p>
+          ) : null}
+          <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-200 leading-relaxed">
+            {(section.list ?? []).map((item: any, idx: number) => (
+              <li
+                key={idx}
+                dangerouslySetInnerHTML={{ __html: item.li ?? "" }}
+              />
+            ))}
+          </ul>
+        </div>
       </div>
     );
   }
 
   if (section.sectionType === "html") {
     return (
-      <div
-        className="prose prose-slate max-w-none dark:prose-invert"
-        dangerouslySetInnerHTML={{ __html: section.html ?? "" }}
-      />
+      <div className="space-y-4 rounded-xl bg-orange-100 p-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10">
+        <div
+          className="prose prose-slate max-w-none dark:prose-invert"
+          dangerouslySetInnerHTML={{ __html: section.html ?? "" }}
+        />
+      </div>
     );
   }
 
@@ -95,7 +102,7 @@ function renderSection(section: any) {
     (section.header ? String(section.header) : "Study guide image");
 
   return (
-    <div className="space-y-4 rounded-xl bg-gray-50 p-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10">
+    <div className="space-y-4 rounded-xl bg-orange-100 p-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10">
       {section.subHeader ? (
         <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
           {section.subHeader}
@@ -103,14 +110,16 @@ function renderSection(section: any) {
       ) : null}
       {section.image ? (
         <figure className="space-y-3">
-          <img
-            src={section.image}
-            aria-disabled="false"
-            // alt={imgAlt}
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            className="w-full rounded-xl border border-black/5 bg-white"
-          />
+          <div className="flex justify-center">
+            <img
+              src={section.image}
+              aria-disabled="false"
+              // alt={imgAlt}
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              className="max-h-80 w-auto max-w-full rounded-xl border border-black/5 bg-white"
+            />
+          </div>
           {/* {visibleCaption && !isProbablyUrl(imageCaption) ? (
             <figcaption className="text-sm text-gray-500 dark:text-gray-400">
               {visibleCaption}
@@ -146,10 +155,12 @@ function renderGuide(guide: Guide) {
       </div>
 
       {(guide.chapters ?? []).length ? (
-        <div className="rounded-xl bg-white p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Table of Contents
-          </h3>
+        <div className="rounded-xl bg-linear-to-br from-white via-amber-50 to-amber-100 p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10">
+          <div className="mb-4 rounded-lg border-b border-black/10 bg-blue-500 p-4 pb-2 dark:border-white/10">
+            <h3 className="text-lg font-semibold text-white dark:text-gray-100">
+              Chapters
+            </h3>
+          </div>
           <ol className="mt-3 space-y-2 text-sm text-gray-700 dark:text-gray-200">
             {(guide.chapters ?? []).map((chapter: any, idx: number) => {
               const chapterId = `chapter-${idx + 1}`;
@@ -172,11 +183,11 @@ function renderGuide(guide: Guide) {
         <div
           key={idx}
           id={`chapter-${idx + 1}`}
-          className="rounded-xl bg-white p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
+          className="rounded-xl bg-blue-500 p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
         >
           <div className="space-y-5">
             <div>
-              <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              <h3 className="text-2xl font-semibold text-white dark:text-gray-100 border-b-3 pb-5 border-blue-100/20">
                 {chapter.chapterHeader}
               </h3>
               {chapter.chapterSubHeader ? (
@@ -188,9 +199,9 @@ function renderGuide(guide: Guide) {
 
             <div className="space-y-7">
               {(chapter.sections ?? []).map((section: any, sIdx: number) => (
-                <section key={sIdx} className="space-y-3">
+                <section key={sIdx} className="space-y-3 mt-5">
                   {section.header ? (
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    <h4 className="text-lg font-semibold text-white dark:text-gray-100">
                       {section.header}
                     </h4>
                   ) : null}
@@ -298,7 +309,7 @@ export default async function StudyGuidesPage({
           </div>
           {!category ? (
             <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-              Start with History to see a full guide.
+              {/* Start with History to see a full guide. */}
             </p>
           ) : null}
         </div>
@@ -322,9 +333,9 @@ export default async function StudyGuidesPage({
                     key={idx}
                     href={href}
                     className={
-                      "relative h-36 w-64 shrink-0 overflow-hidden rounded-xl ring-1 transition-colors " +
+                      "relative h-36 w-64 shrink-0 overflow-hidden rounded-xl m-2 ring-1 transition-colors " +
                       (isActive
-                        ? "ring-blue-500"
+                        ? "ring-yellow-300 ring-4 "
                         : "ring-black/10 hover:ring-black/20 dark:ring-white/10 dark:hover:ring-white/20")
                     }
                     aria-label={`Open guide: ${g.guideTitle}`}
@@ -336,7 +347,7 @@ export default async function StudyGuidesPage({
                       }
                       style={cover ? { backgroundImage: `url(${cover})` } : {}}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/0" />
                     <div className="absolute bottom-0 left-0 right-0 p-3">
                       <div className="text-sm font-semibold text-white leading-snug">
                         {g.guideTitle}
@@ -349,7 +360,7 @@ export default async function StudyGuidesPage({
           </div>
         ) : null}
 
-        <div className="rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800">
+        <div className="rounded-lg bg-amber-300 p-8 shadow-lg dark:bg-gray-800">
           {category && !selectedGuide ? (
             <div>
               <h2 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-gray-100">
@@ -364,10 +375,10 @@ export default async function StudyGuidesPage({
           ) : (
             <div>
               <h2 className="mb-4 text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                Coming Soon!
+                Select a category above to see available guides.
               </h2>
               <p className="text-gray-600 dark:text-gray-300">
-                Study guides will live here.
+                {/* Check out one of the study guides above. */}
               </p>
             </div>
           )}

@@ -33,13 +33,15 @@ function renderMedia(mediaType?: string, mediaUrl?: string) {
 
   if (mediaType === "image") {
     return (
-      <img
-        src={mediaUrl}
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        className="w-full rounded-xl border border-black/5 bg-white"
-        alt=""
-      />
+      <div className="flex justify-center">
+        <img
+          src={mediaUrl}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          className="max-h-80 w-auto max-w-full rounded-xl border border-black/5 bg-white"
+          alt=""
+        />
+      </div>
     );
   }
 
@@ -127,7 +129,7 @@ function renderSection(section: any) {
 
   // "standard" (and anything else) — render content if present.
   return section.content ? (
-    <div className="space-y-4 rounded-xl bg-gray-50 p-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10">
+    <div className="space-y-4 rounded-xl bg-orange-100 p-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10">
       <div
         className="prose prose-slate max-w-none dark:prose-invert"
         dangerouslySetInnerHTML={{ __html: section.content ?? "" }}
@@ -142,23 +144,36 @@ function renderSection(section: any) {
 function renderGuide(guide: StrategyGuide) {
   return (
     <div className="space-y-10">
-      <div>
-        <h2 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-          {guide.title}
+      <div
+        className="bg-white
+      p-4 rounded-2xl border-3 border-cyan-700 dark:bg-amber-950/30 dark:border-amber-700"
+      >
+        <h2 className="text-3xl font-semibold tracking-tight text-cyan-800 dark:text-gray-100">
+          The Official Trivia Central Guide to{" "}
+          {<span className="font-bold">{guide.title}</span>}
         </h2>
         {guide.subtitle ? (
           <p className="mt-2 text-gray-600 dark:text-gray-300 leading-relaxed">
-            {guide.subtitle}
+            <i>{guide.subtitle}</i>
           </p>
         ) : null}
       </div>
 
       {(guide.chapters ?? []).length ? (
-        <div className="rounded-xl bg-white p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Table of Contents
-          </h3>
-          <ol className="mt-3 space-y-2 text-sm text-gray-700 dark:text-gray-200">
+        <div
+          className="rounded-xl from bg-amber-50
+      bg-linear-to-br from-white via-amber-50 to-amber-100 p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
+        >
+          <div
+            className="mb-4 border-b border-black/10 pb-2 dark:border-white/10
+            p-4 rounded-lg
+          bg-blue-500"
+          >
+            <h3 className="text-lg font-semibold text-white dark:text-gray-100">
+              Chapters
+            </h3>
+          </div>
+          <ol className="mt-3 ml-4 space-y-2 text-md font-semibold text-blue-500 dark:text-gray-200">
             {(guide.chapters ?? []).map((chapter: any, idx: number) => {
               const chapterId = `chapter-${idx + 1}`;
               return (
@@ -180,20 +195,20 @@ function renderGuide(guide: StrategyGuide) {
         <div
           key={idx}
           id={`chapter-${idx + 1}`}
-          className="rounded-xl bg-white p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
+          className="rounded-xl bg-blue-500 p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
         >
           <div className="space-y-5">
             <div>
-              <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              <h3 className="text-2xl font-semibold text-white dark:text-gray-100 border-b-3 pb-5 border-blue-100/20">
                 {chapter.chapterTitle}
               </h3>
             </div>
 
             <div className="space-y-7">
               {(chapter.sections ?? []).map((section: any, sIdx: number) => (
-                <section key={sIdx} className="space-y-3">
+                <section key={sIdx} className="space-y-3 mt-5">
                   {section.header ? (
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    <h4 className="text-lg font-semibold text-white dark:text-gray-100">
                       {section.header}
                     </h4>
                   ) : null}
@@ -215,13 +230,13 @@ export default async function StrategyGuidesPage({
 
   const guideRaw = sp.guide;
   const guideParam = Array.isArray(guideRaw) ? guideRaw[0] : guideRaw;
-  const requestedGuideIndex = guideParam
-    ? Number.parseInt(guideParam, 10)
-    : NaN;
+  const requestedGuideIndex =
+    typeof guideParam === "string" ? Number.parseInt(guideParam, 10) : NaN;
 
-  const selectedGuideIndex = Number.isFinite(requestedGuideIndex)
-    ? requestedGuideIndex
-    : 0;
+  const selectedGuideIndex =
+    typeof guideParam === "string" && Number.isFinite(requestedGuideIndex)
+      ? requestedGuideIndex
+      : -1;
 
   const selectedGuide =
     selectedGuideIndex >= 0 && selectedGuideIndex < strategyGuides.length
@@ -259,9 +274,9 @@ export default async function StrategyGuidesPage({
                     key={idx}
                     href={href}
                     className={
-                      "relative h-36 w-64 shrink-0 overflow-hidden rounded-xl ring-1 transition-colors " +
+                      "relative h-36 w-64 shrink-0 overflow-hidden rounded-xl m-2 ring-1 transition-colors " +
                       (isActive
-                        ? "ring-blue-500"
+                        ? "ring-yellow-300 ring-4 "
                         : "ring-black/10 hover:ring-black/20 dark:ring-white/10 dark:hover:ring-white/20")
                     }
                     aria-label={`Open guide: ${g.title}`}
@@ -286,16 +301,16 @@ export default async function StrategyGuidesPage({
           </div>
         ) : null}
 
-        <div className="rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800">
+        <div className="rounded-lg bg-amber-300 p-8 shadow-lg dark:bg-gray-800">
           {selectedGuide ? (
             renderGuide(selectedGuide)
           ) : (
             <div>
               <h2 className="mb-4 text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                Coming Soon!
+                Check out one of the strategy guides above.
               </h2>
               <p className="text-gray-600 dark:text-gray-300">
-                Strategy guides will live here.
+                {/* Strategy guides will live here. */}
               </p>
             </div>
           )}

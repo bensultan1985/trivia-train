@@ -3,7 +3,17 @@
 
 import { commonKnowledge } from "./commonKnowledge";
 import { dealOrNoDeal } from "./dealOrNoDeal";
+import { familyFeud } from "./familyFeud";
 import { jeopardy } from "./jeopardy";
+import { thePriceIsRight } from "./thePriceIsRight";
+import { theWeakestLink } from "./theWeakestLink";
 
-export const strategyGuides = [commonKnowledge, dealOrNoDeal, jeopardy] as const;
+export const strategyGuides = [
+  jeopardy,
+  familyFeud,
+  thePriceIsRight,
+  dealOrNoDeal,
+  theWeakestLink,
+  commonKnowledge,
+] as const;
 export type StrategyGuide = (typeof strategyGuides)[number];
