@@ -33,13 +33,15 @@ function renderMedia(mediaType?: string, mediaUrl?: string) {
 
   if (mediaType === "image") {
     return (
-      <img
-        src={mediaUrl}
-        loading="lazy"
-        referrerPolicy="no-referrer"
-        className="w-full rounded-xl border border-black/5 bg-white"
-        alt=""
-      />
+      <div className="flex justify-center">
+        <img
+          src={mediaUrl}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          className="max-h-80 w-auto max-w-full rounded-xl border border-black/5 bg-white"
+          alt=""
+        />
+      </div>
     );
   }
 
@@ -160,7 +162,7 @@ function renderGuide(guide: StrategyGuide) {
       {(guide.chapters ?? []).length ? (
         <div
           className="rounded-xl from bg-amber-50
-      bg-gradient-to-br from-white via-amber-50 to-amber-100 p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
+      bg-linear-to-br from-white via-amber-50 to-amber-100 p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
         >
           <div
             className="mb-4 border-b border-black/10 pb-2 dark:border-white/10
