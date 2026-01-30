@@ -127,7 +127,10 @@ export default function GameBuilderPage() {
         { text: question.answer2, index: 2 },
         question.answer3 ? { text: question.answer3, index: 3 } : null,
         question.answer4 ? { text: question.answer4, index: 4 } : null,
-      ].filter((a): a is { text: string; index: number } => a !== null && a.text.trim() !== "");
+      ].filter(
+        (a): a is { text: string; index: number } =>
+          a !== null && a.text.trim() !== "",
+      );
 
       // Don't shuffle if there are fewer than 2 answers
       if (answers.length < 2) {
@@ -436,28 +439,28 @@ export default function GameBuilderPage() {
           <div className="flex flex-wrap gap-3 items-center">
             <button
               onClick={newGame}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-colors"
             >
               New Game
             </button>
             <button
-              onClick={() => setShowLoadModal(true)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-bold rounded-lg transition-colors"
             >
-              Load Game
+              {isSaving ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={() => setShowLoadModal(true)}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"
+            >
+              Open
             </button>
             <button
               onClick={openOrderModal}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"
             >
-              Order
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={!canSave() || isSaving}
-              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white font-bold rounded-lg transition-colors"
-            >
-              {isSaving ? "Saving..." : "Save Game"}
+              Organize
             </button>
             <button
               onClick={shuffleAnswers}
@@ -489,10 +492,11 @@ export default function GameBuilderPage() {
                 </h3>
                 <button
                   onClick={() => removeQuestion(index)}
-                  className="text-red-600 hover:text-red-700 font-bold"
+                  className="bg-red-600 text-white hover:bg-red-700 font-bold px-3 py-0
+                  text-xl  rounded-lg transition-colors"
                   disabled={questions.length <= 1}
                 >
-                  Remove
+                  x
                 </button>
               </div>
 
@@ -635,9 +639,10 @@ export default function GameBuilderPage() {
           <button
             onClick={addQuestion}
             disabled={questions.length >= 50}
-            className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold rounded-lg transition-colors"
+            className="w-50 px-4 py-3 align justify-center bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-bold rounded-lg transition-colors"
           >
-            + Add Question ({questions.length}/50)
+            + Add Question
+            {/* ({questions.length}/50) */}
           </button>
         </div>
 
@@ -681,13 +686,13 @@ export default function GameBuilderPage() {
                           onClick={() => loadGame(game)}
                           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors"
                         >
-                          Load
+                          Open
                         </button>
                         <button
                           onClick={() => deleteGame(game.id)}
                           className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors"
                         >
-                          Delete
+                          x
                         </button>
                       </div>
                     </div>
@@ -810,7 +815,7 @@ export default function GameBuilderPage() {
         {/* Unsaved Changes Modal */}
         {showUnsavedModal && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-stone-500/35  z-50 flex items-center justify-center p-4"
             onClick={() => setShowUnsavedModal(false)}
           >
             <div
@@ -821,7 +826,8 @@ export default function GameBuilderPage() {
                 Unsaved Changes
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                You have unsaved changes. Would you like to save them before continuing?
+                You have unsaved changes. Would you like to save them before
+                continuing?
               </p>
               <div className="flex gap-3 justify-end">
                 <button
