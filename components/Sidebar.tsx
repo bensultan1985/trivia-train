@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 
@@ -15,8 +15,19 @@ import {
   IconTarget,
 } from "@/components/icons";
 
-export default function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+}
+
+export default function Sidebar({
+  isOpen,
+  onClose,
+  isCollapsed,
+  onToggleCollapse,
+}: SidebarProps) {
   const pathname = usePathname();
   const { isSignedIn, isLoaded } = useUser();
 
@@ -94,32 +105,12 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile menu button */}
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="lg:hidden fixed top-4 left-4 z-50 rounded-md bg-blue-700 p-2 text-white shadow-lg ring-1 ring-blue-900/10"
-        aria-label="Toggle menu"
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
-      </button>
-
       {/* Sidebar */}
       <aside
         className={`
           fixed top-0 left-0 h-full bg-white text-white transition-all duration-300 z-40
-          ${isCollapsed ? "-translate-x-full lg:translate-x-0 lg:w-20" : "translate-x-0 w-64"}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+          ${isCollapsed ? "lg:translate-x-0 lg:w-20" : "lg:translate-x-0 w-64"}
         `}
       >
         <div className="flex flex-col h-full">
@@ -169,6 +160,7 @@ export default function Sidebar() {
                     ) : (
                       <Link
                         href={item.href}
+                        onClick={() => onClose()}
                         aria-label={item.label}
                         className={`
                       flex items-center gap-3 p-3 rounded-lg transition-colors
@@ -196,7 +188,7 @@ export default function Sidebar() {
           {/* Toggle button for desktop */}
           <div className="p-4 border-t border-white/10 hidden lg:block">
             <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
+              onClick={onToggleCollapse}
               className="w-full rounded-lg p-2 transition-colors hover:bg-white/5"
               aria-label="Toggle sidebar"
             >
@@ -219,10 +211,10 @@ export default function Sidebar() {
       </aside>
 
       {/* Overlay for mobile */}
-      {!isCollapsed && (
+      {isOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsCollapsed(true)}
+          onClick={onClose}
         />
       )}
     </>
