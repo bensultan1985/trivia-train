@@ -41,6 +41,11 @@ export default function GameBuilderPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+  const [tempQuestionOrder, setTempQuestionOrder] = useState<Question[]>([]);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [savedGames, setSavedGames] = useState<Game[]>([]);
   const [loadingGames, setLoadingGames] = useState(false);
 
@@ -239,28 +244,52 @@ export default function GameBuilderPage() {
     }
   };
 
-  const loadGame = (game: Game) => {
-    if (
-      hasUnsavedChanges &&
-      !confirm("You have unsaved changes. Are you sure you want to load another game?")
-    ) {
-      return;
+  const checkUnsavedChanges = (action: () => void) => {
+    if (hasUnsavedChanges) {
+      setPendingAction(() => action);
+      setShowUnsavedModal(true);
+    } else {
+      action();
     }
+  };
 
-    setCurrentGame(game);
-    setGameName(game.name);
-    setQuestions(
-      game.questions.map((q) => ({
-        question: q.question,
-        answer1: q.answer1,
-        answer2: q.answer2,
-        answer3: q.answer3 || "",
-        answer4: q.answer4 || "",
-        correctAnswer: q.correctAnswer,
-      })),
-    );
+  const handleUnsavedSave = async () => {
+    setShowUnsavedModal(false);
+    await handleSave();
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+  };
+
+  const handleUnsavedDiscard = () => {
+    setShowUnsavedModal(false);
     setHasUnsavedChanges(false);
-    setShowLoadModal(false);
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+  };
+
+  const loadGame = (game: Game) => {
+    const doLoad = () => {
+      setCurrentGame(game);
+      setGameName(game.name);
+      setQuestions(
+        game.questions.map((q) => ({
+          question: q.question,
+          answer1: q.answer1,
+          answer2: q.answer2,
+          answer3: q.answer3 || "",
+          answer4: q.answer4 || "",
+          correctAnswer: q.correctAnswer,
+        })),
+      );
+      setHasUnsavedChanges(false);
+      setShowLoadModal(false);
+    };
+
+    checkUnsavedChanges(doLoad);
   };
 
   const deleteGame = async (gameId: string) => {
@@ -298,26 +327,57 @@ export default function GameBuilderPage() {
   };
 
   const newGame = () => {
-    if (
-      hasUnsavedChanges &&
-      !confirm("You have unsaved changes. Are you sure you want to start a new game?")
-    ) {
-      return;
-    }
+    const doNewGame = () => {
+      setCurrentGame(null);
+      setGameName("");
+      setQuestions([
+        {
+          question: "",
+          answer1: "",
+          answer2: "",
+          answer3: "",
+          answer4: "",
+          correctAnswer: 1,
+        },
+      ]);
+      setHasUnsavedChanges(false);
+    };
 
-    setCurrentGame(null);
-    setGameName("");
-    setQuestions([
-      {
-        question: "",
-        answer1: "",
-        answer2: "",
-        answer3: "",
-        answer4: "",
-        correctAnswer: 1,
-      },
-    ]);
-    setHasUnsavedChanges(false);
+    checkUnsavedChanges(doNewGame);
+  };
+
+  const openOrderModal = () => {
+    setTempQuestionOrder([...questions]);
+    setShowOrderModal(true);
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const newOrder = [...tempQuestionOrder];
+    const draggedItem = newOrder[draggedIndex];
+    newOrder.splice(draggedIndex, 1);
+    newOrder.splice(index, 0, draggedItem);
+
+    setTempQuestionOrder(newOrder);
+    setDraggedIndex(index);
+  };
+
+  const applyQuestionOrder = () => {
+    setQuestions(tempQuestionOrder);
+    setHasUnsavedChanges(true);
+    setShowOrderModal(false);
+    setDraggedIndex(null);
+  };
+
+  const cancelQuestionOrder = () => {
+    setShowOrderModal(false);
+    setDraggedIndex(null);
   };
 
   if (!isLoaded) {
@@ -385,6 +445,12 @@ export default function GameBuilderPage() {
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors"
             >
               Load Game
+            </button>
+            <button
+              onClick={openOrderModal}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors"
+            >
+              Order
             </button>
             <button
               onClick={handleSave}
@@ -679,6 +745,96 @@ export default function GameBuilderPage() {
                   className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white font-bold rounded-lg transition-colors"
                 >
                   {isSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Order Modal */}
+        {showOrderModal && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={cancelQuestionOrder}
+          >
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">
+                Reorder Questions
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                Drag and drop questions to reorder them
+              </p>
+              <div className="space-y-2 mb-6">
+                {tempQuestionOrder.map((q, index) => (
+                  <div
+                    key={index}
+                    draggable
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    className={`p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg cursor-move hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                      draggedIndex === index ? "opacity-50" : ""
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="font-bold text-gray-500 dark:text-gray-400">
+                        {index + 1}.
+                      </span>
+                      <span className="text-gray-800 dark:text-gray-100 truncate">
+                        {q.question || "(Empty question)"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={cancelQuestionOrder}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={applyQuestionOrder}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Unsaved Changes Modal */}
+        {showUnsavedModal && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowUnsavedModal(false)}
+          >
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">
+                Unsaved Changes
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
+                You have unsaved changes. Would you like to save them before continuing?
+              </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={handleUnsavedDiscard}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg transition-colors"
+                >
+                  Exit Without Saving
+                </button>
+                <button
+                  onClick={handleUnsavedSave}
+                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg transition-colors"
+                >
+                  Save
                 </button>
               </div>
             </div>
