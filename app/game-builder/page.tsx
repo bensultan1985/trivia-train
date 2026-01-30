@@ -101,7 +101,8 @@ export default function GameBuilderPage() {
       if (url.origin !== window.location.origin) return;
 
       const isWithinBuilder =
-        url.pathname === "/game-builder" || url.pathname.startsWith("/game-builder/");
+        url.pathname === "/game-builder" ||
+        url.pathname.startsWith("/game-builder/");
       if (isWithinBuilder) return;
 
       e.preventDefault();
