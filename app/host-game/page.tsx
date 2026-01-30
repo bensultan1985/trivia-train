@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { IconHostGame } from "@/components/icons";
+import {
+  IconArrowLeft,
+  IconFullScreen,
+  IconHostGame,
+  IconX,
+} from "@/components/icons";
 
 interface Question {
   id: string;
@@ -36,6 +41,17 @@ export default function HostGamePage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [score, setScore] = useState(0);
+  const [builderGameName, setBuilderGameName] = useState<string | null>(null);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  useEffect(() => {
+    if (!isFullScreen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isFullScreen]);
 
   // Modals
   const [showMyGamesModal, setShowMyGamesModal] = useState(false);
@@ -88,11 +104,13 @@ export default function HostGamePage() {
   };
 
   const startQuickGame = async () => {
+    setBuilderGameName(null);
     await startGame(10);
   };
 
   const startCustomGame = async () => {
     setShowCustomGameModal(false);
+    setBuilderGameName(null);
     await startGame(customQuestionCount);
   };
 
@@ -102,6 +120,7 @@ export default function HostGamePage() {
       alert("This game has no questions. Please select a different game.");
       return;
     }
+    setBuilderGameName(game.name);
     setQuestions(game.questions);
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
@@ -111,6 +130,7 @@ export default function HostGamePage() {
 
   const startGame = async (count: number) => {
     try {
+      setBuilderGameName(null);
       const response = await fetch(`/api/trivia/questions?count=${count}`);
       if (response.ok) {
         const data = await response.json();
@@ -163,6 +183,8 @@ export default function HostGamePage() {
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
     setScore(0);
+    setBuilderGameName(null);
+    setIsFullScreen(false);
   };
 
   const incrementQuestionCount = () => {
@@ -423,88 +445,148 @@ export default function HostGamePage() {
     const currentQuestion = questions[currentQuestionIndex];
     const answerOptions = getAnswerOptions(currentQuestion);
 
-    return (
-      <div className="p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-6 rounded-lg bg-orange-400 p-4 text-white shadow-lg">
-            <div className="flex justify-between items-center">
+    const quiz = (
+      <>
+        <div className="mb-6 rounded-lg bg-orange-400 p-4 text-white shadow-lg">
+          <div className="flex justify-between items-center">
+            {builderGameName ? (
               <div>
-                <h1 className="text-2xl font-bold">Host Game</h1>
+                <h1 className="text-2xl font-bold">{builderGameName}</h1>
                 <p className="text-white/90">
                   Question {currentQuestionIndex + 1} of {questions.length}
                 </p>
               </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold">{score}</div>
-                <div className="text-sm text-white/90">Score</div>
+            ) : (
+              <div>
+                <p className="text-white/90">
+                  Question {currentQuestionIndex + 1} of {questions.length}
+                </p>
               </div>
-            </div>
-          </div>
-
-          <div className="rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-8">
-              {currentQuestion.question}
-            </h2>
-
-            <div className="space-y-4 mb-8">
-              {answerOptions.map((option, index) => {
-                const isSelected = selectedAnswer === option.key;
-                const isCorrect = option.isCorrect;
-
-                let buttonClasses =
-                  "w-full text-left p-4 rounded-lg border-2 transition-all font-medium ";
-
-                if (selectedAnswer === null) {
-                  // Before answering
-                  buttonClasses +=
-                    "border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-600";
-                } else {
-                  // After answering
-                  if (isSelected && isCorrect) {
-                    // Selected correct answer - blue/yellow theme
-                    buttonClasses +=
-                      "border-yellow-500 bg-gradient-to-r from-blue-500 to-yellow-500 text-white";
-                  } else if (isSelected && !isCorrect) {
-                    // Selected wrong answer - red
-                    buttonClasses += "border-red-500 bg-red-500 text-white";
-                  } else if (!isSelected && isCorrect) {
-                    // Not selected but correct - yellow
-                    buttonClasses +=
-                      "border-yellow-500 bg-yellow-400 text-gray-900 font-bold";
-                  } else {
-                    // Not selected and not correct
-                    buttonClasses +=
-                      "border-gray-300 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 opacity-50";
-                  }
-                }
-
-                return (
-                  <button
-                    key={option.key}
-                    onClick={() => handleAnswerClick(option.key)}
-                    disabled={selectedAnswer !== null}
-                    className={buttonClasses}
-                  >
-                    {option.text}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="flex gap-4">
-              {selectedAnswer !== null && (
-                <button
-                  onClick={handleNextQuestion}
-                  className="flex-1 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg transition-colors"
-                >
-                  {currentQuestionIndex < questions.length - 1
-                    ? "Next Question"
-                    : "Finish Game"}
-                </button>
-              )}
+            )}
+            <div className="text-right">
+              <div className="text-3xl font-bold">{score}</div>
+              <div className="text-sm text-white/90">Score</div>
             </div>
           </div>
         </div>
+
+        <div className="rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-8">
+            {currentQuestion.question}
+          </h2>
+
+          <div className="space-y-4 mb-8">
+            {answerOptions.map((option) => {
+              const isSelected = selectedAnswer === option.key;
+              const isCorrect = option.isCorrect;
+
+              let buttonClasses =
+                "w-full text-left p-4 rounded-lg border-2 transition-all font-medium ";
+
+              if (selectedAnswer === null) {
+                // Before answering
+                buttonClasses +=
+                  "border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-600";
+              } else {
+                // After answering
+                if (isSelected && isCorrect) {
+                  // Selected correct answer - blue/yellow theme
+                  buttonClasses +=
+                    "border-yellow-500 bg-gradient-to-r from-blue-500 to-yellow-500 text-white";
+                } else if (isSelected && !isCorrect) {
+                  // Selected wrong answer - red
+                  buttonClasses += "border-red-500 bg-red-500 text-white";
+                } else if (!isSelected && isCorrect) {
+                  // Not selected but correct - yellow
+                  buttonClasses +=
+                    "border-yellow-500 bg-yellow-400 text-gray-900 font-bold";
+                } else {
+                  // Not selected and not correct
+                  buttonClasses +=
+                    "border-gray-300 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 opacity-50";
+                }
+              }
+
+              return (
+                <button
+                  key={option.key}
+                  onClick={() => handleAnswerClick(option.key)}
+                  disabled={selectedAnswer !== null}
+                  className={buttonClasses}
+                >
+                  {option.text}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-4">
+            {selectedAnswer !== null && (
+              <button
+                onClick={handleNextQuestion}
+                className="flex-1 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg transition-colors"
+              >
+                {currentQuestionIndex < questions.length - 1
+                  ? "Next Question"
+                  : "Finish Game"}
+              </button>
+            )}
+          </div>
+        </div>
+      </>
+    );
+
+    return (
+      <div className="p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-3 w-full rounded-lg border border-gray-200 bg-white/80 px-4 py-2 shadow-sm backdrop-blur dark:border-gray-700 dark:bg-gray-800/80">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={returnToMenu}
+                className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+              >
+                <IconArrowLeft className="h-4 w-4" />
+                Exit
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsFullScreen(true)}
+                className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+              >
+                <span>Full Screen</span>
+                <IconFullScreen className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          {quiz}
+        </div>
+
+        {isFullScreen && (
+          <div
+            className="fixed inset-0 z-50 bg-black"
+            role="dialog"
+            aria-modal="true"
+          >
+            <button
+              type="button"
+              onClick={() => setIsFullScreen(false)}
+              className="absolute right-4 top-4 rounded-md p-2 text-white/90 hover:text-white hover:bg-white/10"
+              aria-label="Close full screen"
+              title="Close"
+            >
+              <IconX className="h-6 w-6" />
+            </button>
+
+            <div className="h-full w-full overflow-y-auto p-6">
+              <div className="mx-auto max-w-5xl">
+                <div className="scale-[1.03] origin-top">{quiz}</div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
