@@ -23,6 +23,54 @@ export function IconHome(props: IconProps) {
   );
 }
 
+export function IconArrowLeft(props: IconProps) {
+  const { className = "h-6 w-6", ...rest } = props;
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      {...rest}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M10 19l-7-7 7-7"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M3 12h18"
+      />
+    </svg>
+  );
+}
+
+export function IconFullScreen(props: IconProps) {
+  const { className = "h-6 w-6", ...rest } = props;
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      {...rest}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"
+      />
+    </svg>
+  );
+}
+
 export function IconTarget(props: IconProps) {
   const { className = "h-6 w-6", ...rest } = props;
   return (
