@@ -7,8 +7,10 @@ import { familyFeud } from "./familyFeud";
 import { jeopardy } from "./jeopardy";
 import { thePriceIsRight } from "./thePriceIsRight";
 import { theWeakestLink } from "./theWeakestLink";
+import { auditioning } from "./auditioning";
 
 export const strategyGuides = [
+  auditioning,
   jeopardy,
   familyFeud,
   thePriceIsRight,
