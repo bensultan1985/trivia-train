@@ -2,7 +2,7 @@ import { IconDashboard } from "@/components/icons";
 
 export default async function DashboardPage() {
   return (
-    <div className="p-4 sm:p-8">
+    <div className="px-4 py-8 sm:p-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 sm:mb-8 rounded-lg bg-blue-500 p-4 sm:p-8 text-white shadow-lg">
           <div className="mb-3 sm:mb-4 flex items-center gap-2 sm:gap-4">
@@ -11,7 +11,9 @@ export default async function DashboardPage() {
             </span>
             <div>
               <h1 className="text-2xl sm:text-4xl font-bold">Dashboard</h1>
-              <p className="mt-1 sm:mt-2 text-sm sm:text-base text-white/90">Your training overview</p>
+              <p className="mt-1 sm:mt-2 text-sm sm:text-base text-white/90">
+                Your training overview
+              </p>
             </div>
           </div>
         </div>

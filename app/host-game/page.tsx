@@ -241,7 +241,7 @@ export default function HostGamePage() {
   // Menu view
   if (gameMode === "menu") {
     return (
-      <div className="p-8">
+      <div className="px-4 py-8 sm:p-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-0 rounded-lg bg-orange-400 p-6 pb-2 text-white shadow-lg">
             <div className="mb-4 flex items-center gap-4">
@@ -537,7 +537,7 @@ export default function HostGamePage() {
     );
 
     return (
-      <div className="p-8">
+      <div className="px-4 py-8 sm:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-3 w-full rounded-lg border border-gray-200 bg-white/80 px-4 py-2 shadow-sm backdrop-blur dark:border-gray-700 dark:bg-gray-800/80">
             <div className="flex items-center justify-between">
@@ -597,7 +597,7 @@ export default function HostGamePage() {
     if (totalQuestions === 0) {
       // Should not happen, but handle gracefully
       return (
-        <div className="p-8">
+        <div className="px-4 py-8 sm:p-8">
           <div className="max-w-4xl mx-auto">
             <div className="rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800 text-center">
               <p className="text-gray-800 dark:text-gray-100">
@@ -619,7 +619,7 @@ export default function HostGamePage() {
     const didWell = percentage >= 50;
 
     return (
-      <div className="p-8">
+      <div className="px-4 py-8 sm:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6 rounded-lg bg-orange-400 p-6 text-white shadow-lg">
             <div className="text-center">

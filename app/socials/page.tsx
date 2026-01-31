@@ -10,14 +10,14 @@ export default async function SocialsPage() {
     // },
     {
       name: "X (Twitter)",
-      url: "https://www.x.com",
+      url: "https://www.x.com/vericontent",
       // icon: "𝕏",
       description: "Join the conversation and get daily trivia challenges.",
       color: "from-slate-700 to-slate-100",
     },
     {
       name: "Patreon",
-      url: "https://www.instagram.com",
+      url: "https://www.patreon.com/cw/vericontent",
       icon: "",
       description:
         "Want to keep Trivia Central growing? Support us on Patreon.",
@@ -25,7 +25,7 @@ export default async function SocialsPage() {
     },
     {
       name: "YouTube",
-      url: "https://www.youtube.com",
+      url: "https://www.youtube.com/@VeriContent",
       // icon: "▶️",
       description:
         "Coming soon: Watch trivia strategy videos. Or, watch our flagship series, Made In.",
@@ -33,7 +33,7 @@ export default async function SocialsPage() {
     },
     {
       name: "Rumble",
-      url: "https://www.youtube.com",
+      url: "https://www.rumble.com/vericontent",
       // icon: "▶️",
       description:
         "Coming soon: Watch trivia strategy videos. Or, watch our flagship series, Made In.",
