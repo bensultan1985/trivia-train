@@ -7,18 +7,19 @@ import {
 } from "@/components/icons";
 import AnnouncementCard from "@/components/AnnouncementCard";
 import FeatureCard from "@/components/FeatureCard";
+import DailyFunFact from "@/components/DailyFunFact";
 
 export default async function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <div className="px-4 py-8 md:p-8 lg:p-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="px-4 py-4 md:p-8 lg:p-12 lg:py-8">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <h1 className="text-5xl md:text-6xl font-black mb-5 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
-              Welcome to Your Dashboard
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 font-medium">
+            {/* <h1 className="text-2xl md:text-3xl sm:text-2xl font-black mb-5  text-blue-500 bg-clip-text ">
+              Dashboard
+            </h1> */}
+            {/* <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 font-medium">
               Your{" "}
               <span className="text-orange-500 text-md font-semibold">
                 TRAINING HUB
@@ -27,30 +28,30 @@ export default async function DashboardPage() {
               <span className="text-emerald-500 text-md font-semibold">
                 GAME SHOW SUCCESS
               </span>
-            </p>
+            </p> */}
           </div>
 
           {/* Announcements Section */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100 flex items-center gap-3">
-              📢 Announcements
-            </h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              <AnnouncementCard
-                title="Target Practice Live"
-                message="Quick rounds with tips and analytics to sharpen your trivia skills!"
-              />
-              <AnnouncementCard
-                title="Strategy Guides Available"
-                message="Learn winning strategies for popular shows like Jeopardy!"
-              />
-              <AnnouncementCard
-                title="Game Builder Coming Soon"
-                message="Create custom trivia games. Perfect for classrooms and parties!"
-              />
-            </div>
+            {/* <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100 flex items-center gap-3 sm:hidden">
+              Announcements
+            </h2> */}
+            {/* <div
+              className="
+            // grid md:grid-cols-3 gap-4
+            
+            "
+            ></div> */}
           </div>
 
+          <div className="mb-8">
+            <DailyFunFact />
+          </div>
+
+          {/* <AnnouncementCard
+            title="Target Practice Live"
+            message="Quick rounds with tips and analytics to sharpen your trivia skills!"
+          /> */}
           {/* Target Practice - Prominent Section */}
           <div className="mb-12">
             <a
@@ -58,7 +59,7 @@ export default async function DashboardPage() {
               aria-label="Navigate to Target Practice training mode"
               className="block"
             >
-              <div className="rounded-2xl bg-gradient-to-r from-blue-500 via-blue-500 to-blue-400 shadow-2xl p-8 md:p-12 text-white transition-all motion-safe:hover:scale-[1.02] hover:shadow-3xl border-4 border-blue-400">
+              <div className="rounded-2xl bg-linear-to-r from-blue-500 via-blue-500 to-blue-400 shadow-2xl p-8 md:p-12 text-white transition-all motion-safe:hover:scale-[1.02] hover:shadow-3xl border-4 border-blue-400">
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <div className="shrink-0">
                     <IconTarget className="h-24 w-24 md:h-32 md:w-32 motion-safe:animate-pulse" />
@@ -85,9 +86,9 @@ export default async function DashboardPage() {
 
           {/* Feature Grid */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+            {/* <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">
               Training Features
-            </h2>
+            </h2> */}
             <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
               <FeatureCard
                 href="/strategy-guides"
@@ -128,17 +129,17 @@ export default async function DashboardPage() {
           </div>
 
           {/* Pro Tip Section */}
-          <div className="rounded-xl border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-purple-50 p-6 dark:border-indigo-800 dark:from-indigo-950/50 dark:to-purple-950/50 shadow-lg">
+          {/* <div className="rounded-xl border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-purple-50 p-6 dark:border-indigo-800 dark:from-indigo-950/50 dark:to-purple-950/50 shadow-lg">
             <h3 className="mb-3 font-black text-2xl text-indigo-900 dark:text-indigo-100 flex items-center gap-2">
               💡 Pro Tip
             </h3>
             <p className="text-base text-indigo-900/90 dark:text-indigo-100/90 leading-relaxed">
-              Registered users can toggle whether or not they want to see
-              repeat questions in Target Practice. "Repeat" mode helps solidify
+              Registered users can toggle whether or not they want to see repeat
+              questions in Target Practice. "Repeat" mode helps solidify
               concepts. "Non-repeat" mode exposes you to a wider variety of
               questions.
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
