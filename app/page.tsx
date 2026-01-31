@@ -11,6 +11,7 @@ import {
 } from "@/components/icons";
 import AnnouncementCard from "@/components/AnnouncementCard";
 import FeatureCard from "@/components/FeatureCard";
+import DailyFunFact from "@/components/DailyFunFact";
 
 export default async function HomePage() {
   const user = await currentUser();
@@ -67,6 +68,10 @@ export default async function HomePage() {
                 .
               </p>
             </div>
+          </div>
+
+          <div className="mb-8">
+            <DailyFunFact />
           </div>
 
           {/* Announcements Section */}
