@@ -10,12 +10,12 @@ import FeatureCard from "@/components/FeatureCard";
 
 export default async function DashboardPage() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <div className="px-4 py-8 md:p-8 lg:p-12">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <h1 className="text-5xl md:text-6xl font-black mb-5 bg-linear-to-r from-blue-500 via-plue-500 to-blue-500 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-black mb-5 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
               Welcome to Your Dashboard
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 font-medium">
@@ -58,7 +58,7 @@ export default async function DashboardPage() {
               aria-label="Navigate to Target Practice training mode"
               className="block"
             >
-              <div className="rounded-2xl bg-linear-to-r from-blue-500 via-blue-500 to-blue-400 shadow-2xl p-8 md:p-12 text-white transition-all motion-safe:hover:scale-[1.02] hover:shadow-3xl border-4 border-blue-400">
+              <div className="rounded-2xl bg-gradient-to-r from-blue-500 via-blue-500 to-blue-400 shadow-2xl p-8 md:p-12 text-white transition-all motion-safe:hover:scale-[1.02] hover:shadow-3xl border-4 border-blue-400">
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <div className="shrink-0">
                     <IconTarget className="h-24 w-24 md:h-32 md:w-32 motion-safe:animate-pulse" />
@@ -128,13 +128,13 @@ export default async function DashboardPage() {
           </div>
 
           {/* Pro Tip Section */}
-          <div className="rounded-xl border-2 border-indigo-300 bg-linear-to-r from-indigo-50 to-purple-50 p-6 dark:border-indigo-800 dark:from-indigo-950/50 dark:to-purple-950/50 shadow-lg">
+          <div className="rounded-xl border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-purple-50 p-6 dark:border-indigo-800 dark:from-indigo-950/50 dark:to-purple-950/50 shadow-lg">
             <h3 className="mb-3 font-black text-2xl text-indigo-900 dark:text-indigo-100 flex items-center gap-2">
               💡 Pro Tip
             </h3>
             <p className="text-base text-indigo-900/90 dark:text-indigo-100/90 leading-relaxed">
               Registered users can toggle whether or not they want to see
-              repeat-question in Target Practice. "Repeat" mode helps solidify
+              repeat questions in Target Practice. "Repeat" mode helps solidify
               concepts. "Non-repeat" mode exposes you to a wider variety of
               questions.
             </p>
