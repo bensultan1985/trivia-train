@@ -59,7 +59,7 @@ function renderSection(section: any) {
 
   if (section.sectionType === "list") {
     return (
-      <div className="space-y-4 rounded-xl bg-orange-100 p-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10">
+      <div className="space-y-4 rounded-xl bg-orange-100 px-4 py-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10 sm:p-5">
         <div className="space-y-3">
           {section.subHeader ? (
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -81,7 +81,7 @@ function renderSection(section: any) {
 
   if (section.sectionType === "html") {
     return (
-      <div className="space-y-4 rounded-xl bg-orange-100 p-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10">
+      <div className="space-y-4 rounded-xl bg-orange-100 px-4 py-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10 sm:p-5">
         <div
           className="prose prose-slate max-w-none dark:prose-invert"
           dangerouslySetInnerHTML={{ __html: section.html ?? "" }}
@@ -102,7 +102,7 @@ function renderSection(section: any) {
     (section.header ? String(section.header) : "Study guide image");
 
   return (
-    <div className="space-y-4 rounded-xl bg-orange-100 p-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10">
+    <div className="space-y-4 rounded-xl bg-orange-100 px-4 py-5 ring-1 ring-black/5 dark:bg-gray-900/50 dark:ring-white/10 sm:p-5">
       {section.subHeader ? (
         <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
           {section.subHeader}
@@ -155,7 +155,7 @@ function renderGuide(guide: Guide) {
       </div>
 
       {(guide.chapters ?? []).length ? (
-        <div className="rounded-xl bg-linear-to-br from-white via-amber-50 to-amber-100 p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10">
+        <div className="rounded-xl bg-linear-to-br from-white via-amber-50 to-amber-100 px-4 py-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10 sm:p-6">
           <div className="mb-4 rounded-lg border-b border-black/10 bg-blue-500 p-4 pb-2 dark:border-white/10">
             <h3 className="text-lg font-semibold text-white dark:text-gray-100">
               Chapters
@@ -183,7 +183,7 @@ function renderGuide(guide: Guide) {
         <div
           key={idx}
           id={`chapter-${idx + 1}`}
-          className="rounded-xl bg-blue-500 p-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
+          className="rounded-xl bg-blue-500 px-4 py-6 shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10 sm:p-6"
         >
           <div className="space-y-5">
             <div>
@@ -218,9 +218,9 @@ function renderGuide(guide: Guide) {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Sources
           </h3>
-          <ul className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <ul className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-300 wrap-anywhere">
             {guide.citations.map((c: string, idx: number) => (
-              <li key={idx} className="leading-relaxed">
+              <li key={idx} className="leading-relaxed wrap-anywhere">
                 {c}
               </li>
             ))}
@@ -270,9 +270,9 @@ export default async function StudyGuidesPage({
       : null;
 
   return (
-    <div className="p-8">
+    <div className="px-4 py-8 sm:p-8">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-6 rounded-lg bg-blue-500 p-6 text-white shadow-lg">
+        <div className="mb-6 rounded-lg bg-blue-500 px-4 py-6 text-white shadow-lg sm:p-6">
           <div className="flex items-center gap-4">
             <span className="shrink-0">
               <IconStudyGuides className="h-12 w-12" />
@@ -284,7 +284,7 @@ export default async function StudyGuidesPage({
           </div>
         </div>
 
-        <div className="mb-8 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+        <div className="mb-8 rounded-lg bg-white px-4 py-6 shadow-lg dark:bg-gray-800 sm:p-6">
           <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">
             Choose a category
           </h2>
@@ -315,11 +315,11 @@ export default async function StudyGuidesPage({
         </div>
 
         {category && guidesForCategory.length > 0 ? (
-          <div className="mb-8 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+          <div className="mb-8 rounded-lg bg-white px-4 py-6 shadow-lg dark:bg-gray-800 sm:p-6">
             <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">
               Guides
             </h2>
-            <div className="flex gap-4 overflow-x-auto pb-2">
+            <div className="-mx-4 flex gap-4 overflow-x-auto pb-2 px-4 sm:-mx-6 sm:px-6">
               {guidesForCategory.map((g, idx) => {
                 const cover = getGuideCoverImage(g);
                 const isActive = idx === selectedGuideIndex;
@@ -333,7 +333,7 @@ export default async function StudyGuidesPage({
                     key={idx}
                     href={href}
                     className={
-                      "relative h-36 w-64 shrink-0 overflow-hidden rounded-xl m-2 ring-1 transition-colors " +
+                      "relative h-36 w-[85%] shrink-0 overflow-hidden rounded-xl ring-1 transition-colors sm:w-64 sm:m-2 " +
                       (isActive
                         ? "ring-yellow-300 ring-4 "
                         : "ring-black/10 hover:ring-black/20 dark:ring-white/10 dark:hover:ring-white/20")
@@ -360,7 +360,7 @@ export default async function StudyGuidesPage({
           </div>
         ) : null}
 
-        <div className="rounded-lg bg-amber-300 p-8 shadow-lg dark:bg-gray-800">
+        <div className="rounded-lg bg-amber-300 px-4 py-8 shadow-lg dark:bg-gray-800 sm:p-8">
           {category && !selectedGuide ? (
             <div>
               <h2 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-gray-100">

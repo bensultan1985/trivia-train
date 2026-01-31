@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import Footer from "@/components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
+import ClientLayout from "@/components/ClientLayout";
 
 export const metadata: Metadata = {
   title: "Trivia Central - Train Like a Champion",
@@ -20,18 +18,7 @@ export default async function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
-          <div className="flex flex-col h-screen">
-            <Header />
-            <div className="flex flex-1 overflow-hidden">
-              <Sidebar />
-              <main className="flex-1 overflow-y-auto lg:ml-64">
-                <div className="min-h-full flex flex-col">
-                  <div className="flex-1">{children}</div>
-                  <Footer />
-                </div>
-              </main>
-            </div>
-          </div>
+          <ClientLayout>{children}</ClientLayout>
         </body>
       </html>
     </ClerkProvider>

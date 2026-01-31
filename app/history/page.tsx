@@ -158,7 +158,7 @@ export default function HistoryPage() {
 
   if (!isSignedIn) {
     return (
-      <div className="p-8">
+      <div className="px-4 py-8 sm:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
             <h1 className="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-100">
@@ -180,7 +180,7 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="px-4 py-8 sm:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6 rounded-lg bg-blue-500 p-6 text-white shadow-lg">

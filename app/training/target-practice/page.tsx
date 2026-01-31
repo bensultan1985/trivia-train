@@ -328,61 +328,61 @@ export default function TargetPracticePage() {
     });
 
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-8 rounded-lg bg-blue-500 p-8 text-white shadow-lg">
-            <div className="flex items-center gap-4 mb-4">
+          <div className="mb-6 sm:mb-8 rounded-lg bg-blue-500 p-4 sm:p-8 text-white shadow-lg">
+            <div className="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-4">
               <span className="shrink-0">
-                <IconTarget className="h-16 w-16" />
+                <IconTarget className="h-12 w-12 sm:h-16 sm:w-16" />
               </span>
               <div>
-                <h1 className="text-4xl font-bold">Game Complete!</h1>
-                <p className="mt-2 text-white/90">
+                <h1 className="text-2xl sm:text-4xl font-bold">Game Complete!</h1>
+                <p className="mt-1 sm:mt-2 text-sm sm:text-base text-white/90">
                   Great job on completing the round!
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-            <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center text-gray-800 dark:text-gray-100">
               Final Stats
             </h2>
 
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              <div className="bg-green-100 dark:bg-green-900/30 rounded-lg p-6 text-center">
-                <div className="text-4xl font-bold text-green-600 dark:text-green-400">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-6 sm:mb-8">
+              <div className="bg-green-100 dark:bg-green-900/30 rounded-lg p-4 sm:p-6 text-center">
+                <div className="text-3xl sm:text-4xl font-bold text-green-600 dark:text-green-400">
                   {gameStats.correct}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
                   Correct Answers
                 </div>
               </div>
 
-              <div className="bg-red-100 dark:bg-red-900/30 rounded-lg p-6 text-center">
-                <div className="text-4xl font-bold text-red-600 dark:text-red-400">
+              <div className="bg-red-100 dark:bg-red-900/30 rounded-lg p-4 sm:p-6 text-center">
+                <div className="text-3xl sm:text-4xl font-bold text-red-600 dark:text-red-400">
                   {gameStats.incorrect}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
                   Incorrect Answers
                 </div>
               </div>
             </div>
 
-            <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-8 text-center mb-8">
-              <div className="text-5xl font-bold text-blue-600 dark:text-blue-400">
+            <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-6 sm:p-8 text-center mb-6 sm:mb-8">
+              <div className="text-4xl sm:text-5xl font-bold text-blue-600 dark:text-blue-400">
                 {gameStats.percentCorrect}%
               </div>
-              <div className="text-lg text-gray-600 dark:text-gray-400 mt-2">
+              <div className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mt-2">
                 Accuracy Rate
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center mb-8 border border-gray-200 dark:border-gray-700">
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 text-center mb-6 sm:mb-8 border border-gray-200 dark:border-gray-700">
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 Intuition Score
               </div>
-              <div className="mt-1 text-3xl font-bold text-gray-800 dark:text-gray-100">
+              <div className="mt-1 text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
                 {intuitionScore === null ? "N/A" : `${intuitionScore}%`}
               </div>
               <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -394,12 +394,12 @@ export default function TargetPracticePage() {
               </div>
             </div>
 
-            <div className="space-y-4 mb-8">{items}</div>
+            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">{items}</div>
 
             <div className="text-center">
               <button
                 onClick={handlePlayAgain}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-lg transition-colors text-sm sm:text-base"
               >
                 Train Again
               </button>
@@ -432,45 +432,45 @@ export default function TargetPracticePage() {
       : null;
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-6 rounded-lg bg-blue-500 p-6 text-white shadow-lg">
+        <div className="mb-4 sm:mb-6 rounded-lg bg-blue-500 p-4 sm:p-6 text-white shadow-lg">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <span className="shrink-0">
-                <IconTarget className="h-12 w-12" />
+                <IconTarget className="h-8 w-8 sm:h-12 sm:w-12" />
               </span>
               <div>
-                <h1 className="text-3xl font-bold">Target Practice</h1>
-                <p className="text-white/90">
+                <h1 className="text-xl sm:text-3xl font-bold">Target Practice</h1>
+                <p className="text-sm sm:text-base text-white/90">
                   Question {currentQuestionIndex + 1} of {questions.length}
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold">
+              <div className="text-xl sm:text-2xl font-bold">
                 {gameStats.percentCorrect}%
               </div>
-              <div className="text-sm text-white/90">Accuracy</div>
+              <div className="text-xs sm:text-sm text-white/90">Accuracy</div>
             </div>
           </div>
         </div>
 
         {/* Settings Panel */}
         {isSignedIn && (
-          <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-            <label className="flex items-center gap-3 cursor-pointer">
+          <div className="mb-4 sm:mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 sm:p-4">
+            <label className="flex items-center gap-2 sm:gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={skipRepeats}
                 onChange={(e) => updateSkipRepeats(e.target.checked)}
                 disabled={loadingPreferences}
-                className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
-              <span className="text-gray-700 dark:text-gray-300">
+              <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
                 Do not repeat past trivia{" "}
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   (only show questions you haven't answered yet)
                 </span>
               </span>
@@ -478,27 +478,27 @@ export default function TargetPracticePage() {
           </div>
         )}
 
-        {/* Main Content - 3 Panel Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Question Panel - Spans 2 columns on large screens */}
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-6">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-100">
+        {/* Main Content - Responsive Layout: Stack on mobile, 3-column on desktop */}
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* Main Question Panel - Full width on mobile, 2 columns on large screens */}
+          <div className="order-1 lg:col-span-2">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-8 mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-800 dark:text-gray-100">
                 {currentQuestion.question}
               </h2>
 
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {currentQuestion.answers.map((answer, index) => {
                   const isSelected = selectedAnswer === index;
                   const isCorrect = answer.isCorrect;
 
                   let buttonClasses =
-                    "w-full text-left p-4 rounded-lg border-2 transition-all font-medium ";
+                    "w-full text-left p-3 sm:p-4 rounded-lg border-2 transition-all font-medium text-sm sm:text-base ";
 
                   if (selectedAnswer === null) {
                     // Before answering
                     buttonClasses +=
-                      "border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-600";
+                      "border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-600 active:scale-95";
                   } else {
                     // After answering
                     if (isSelected && isCorrect) {
@@ -533,8 +533,8 @@ export default function TargetPracticePage() {
               </div>
 
               {selectedAnswer === null && (
-                <div className="mt-5">
-                  <div className="mb-3 rounded-lg bg-blue-50 p-3 text-sm text-blue-900/80 dark:bg-blue-950/30 dark:text-blue-100/80">
+                <div className="mt-4 sm:mt-5">
+                  <div className="mb-3 rounded-lg bg-blue-50 p-2 sm:p-3 text-xs sm:text-sm text-blue-900/80 dark:bg-blue-950/30 dark:text-blue-100/80">
                     If you have no clue about the answer, click 'Total Guess'
                     and then answer. This will be part of your "intuition
                     score".
@@ -542,7 +542,7 @@ export default function TargetPracticePage() {
                   <button
                     type="button"
                     onClick={() => setTotalGuessActive((v) => !v)}
-                    className={`w-full rounded-lg border-2 px-4 py-3 font-bold transition-colors ${
+                    className={`w-full rounded-lg border-2 px-4 py-2 sm:py-3 font-bold transition-colors text-sm sm:text-base ${
                       totalGuessActive
                         ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700"
                         : "border-gray-300 bg-white text-gray-800 hover:border-blue-500 hover:bg-blue-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
@@ -554,10 +554,10 @@ export default function TargetPracticePage() {
               )}
 
               {showFeedback && (
-                <div className="mt-6">
+                <div className="mt-4 sm:mt-6">
                   <button
                     onClick={handleNextQuestion}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 sm:py-3 rounded-lg transition-colors text-sm sm:text-base"
                   >
                     {currentQuestionIndex < questions.length - 1
                       ? "Next Question"
@@ -568,16 +568,16 @@ export default function TargetPracticePage() {
             </div>
 
             {/* Tips Panel */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6">
               <button
                 type="button"
                 onClick={() => setTipsOpen((v) => !v)}
                 className="w-full flex items-center justify-between"
               >
-                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-100">
                   Question Review:
                 </h3>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   {tipsOpen ? "Hide" : "Show"}
                 </span>
               </button>
@@ -685,50 +685,50 @@ export default function TargetPracticePage() {
             </div>
           </div>
 
-          {/* Stats Panel - Right sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sticky top-6">
-              <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
+          {/* Stats Panel - Shown below gameplay on mobile, sidebar on desktop */}
+          <div className="order-2 lg:order-3 lg:col-span-1">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 lg:sticky lg:top-6">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800 dark:text-gray-100">
                 Your Stats
               </h3>
 
-              <div className="space-y-4">
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-3">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-2 sm:pb-3">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Correct
                     </span>
-                    <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                    <span className="text-base sm:text-lg font-bold text-green-600 dark:text-green-400">
                       {gameStats.correct}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Incorrect
                     </span>
-                    <span className="text-lg font-bold text-red-600 dark:text-red-400">
+                    <span className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400">
                       {gameStats.incorrect}
                     </span>
                   </div>
                 </div>
 
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-3">
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-2 sm:pb-3">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                    <div className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">
                       {gameStats.percentCorrect}%
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Accuracy
                     </div>
                   </div>
                 </div>
 
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-3">
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-2 sm:pb-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Intuition Score
                     </span>
-                    <span className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                    <span className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-100">
                       {intuitionScore === null ? "N/A" : `${intuitionScore}%`}
                     </span>
                   </div>
@@ -743,8 +743,8 @@ export default function TargetPracticePage() {
 
                 {showFeedback && (
                   <>
-                    <div className="border-b border-gray-200 dark:border-gray-700 pb-3">
-                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <div className="border-b border-gray-200 dark:border-gray-700 pb-2 sm:pb-3">
+                      <div className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Question Details
                       </div>
                       <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
