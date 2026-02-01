@@ -573,11 +573,11 @@ export default function HostGamePage() {
             <button
               type="button"
               onClick={() => setIsFullScreen(false)}
-              className="absolute right-4 top-4 rounded-md p-2 text-white/90 hover:text-white hover:bg-white/10"
+              className="absolute right-[calc(env(safe-area-inset-right)+1rem)] top-[calc(env(safe-area-inset-top)+1rem)] z-10 inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60"
               aria-label="Close full screen"
               title="Close"
             >
-              <IconX className="h-6 w-6" />
+              <IconX className="h-6 w-6 text-white" />
             </button>
 
             <div className="h-full w-full overflow-y-auto p-6">
