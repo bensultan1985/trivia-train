@@ -247,8 +247,8 @@ export default async function StudyGuidesPage({
   const categories = [
     { key: "history", label: "History" },
     { key: "media", label: "Media" },
-    { key: "pop-culture", label: "Pop Culture" },
-    { key: "sports", label: "Sports" },
+    // { key: "pop-culture", label: "Pop Culture" },
+    // { key: "sports", label: "Sports" },
   ] as const;
 
   const guidesForCategory: Guide[] =
@@ -279,14 +279,16 @@ export default async function StudyGuidesPage({
             </span>
             <div>
               <h1 className="text-3xl font-bold">Study Guides</h1>
-              <p className="text-white/90">Build knowledge fast</p>
+              <p className="text-white/90">
+                Overviews and timelines with real game show questions
+              </p>
             </div>
           </div>
         </div>
 
         <div className="mb-8 rounded-lg bg-white px-4 py-6 shadow-lg dark:bg-gray-800 sm:p-6">
           <h2 className="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">
-            Choose a category
+            Choose a category (this feature is a preview - more to come!)
           </h2>
           <div className="flex flex-wrap gap-3">
             {categories.map((c) => {
