@@ -1078,6 +1078,8 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
   }
 
   if (finished) {
+    const waveText = "for daily trivia";
+
     return (
       <div
         ref={containerRef}
@@ -1091,8 +1093,30 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
             </div>
           ) : null}
 
-          <div className="mt-6 text-4xl md:text-6xl font-black tracking-tight">
-            like and subscribe for daily trivia
+          <div className="mt-6">
+            <div className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
+              <span className="end-like inline-block">like</span>
+              <span className="end-and inline-block mx-4">and</span>
+              <span className="end-subscribe inline-block">subscribe</span>
+            </div>
+
+            <div className="end-line2 mt-4 text-3xl md:text-5xl font-black tracking-tight leading-tight">
+              {Array.from(waveText).map((ch, i) => (
+                <span
+                  key={`${ch}-${i}`}
+                  className={ch === " " ? "" : "wave-letter"}
+                  style={
+                    ch === " "
+                      ? undefined
+                      : ({
+                          ["--d" as any]: `${1300 + i * 45}ms`,
+                        } as any)
+                  }
+                >
+                  {ch === " " ? "\u00A0" : ch}
+                </span>
+              ))}
+            </div>
           </div>
 
           {!cleanMode ? (
@@ -1113,6 +1137,119 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
             </>
           ) : null}
         </div>
+
+        <style jsx>{`
+          .end-like {
+            opacity: 0;
+            color: rgba(59, 130, 246, 0.98);
+            text-shadow:
+              0 0 16px rgba(59, 130, 246, 0.35),
+              0 0 30px rgba(59, 130, 246, 0.25);
+            animation: endFlyLeft 560ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+          }
+
+          .end-and {
+            opacity: 0;
+            color: rgba(16, 195, 129, 0.98);
+            text-shadow:
+              0 0 16px rgba(16, 195, 129, 0.35),
+              0 0 30px rgba(16, 195, 129, 0.25);
+            animation: endPop 360ms ease-out forwards;
+            animation-delay: 420ms;
+          }
+
+          .end-subscribe {
+            opacity: 0;
+            color: rgba(236, 72, 153, 0.98);
+            text-shadow:
+              0 0 16px rgba(236, 72, 153, 0.35),
+              0 0 30px rgba(236, 72, 153, 0.25);
+            animation: endFlyRight 560ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+            animation-delay: 600ms;
+          }
+
+          .end-line2 {
+            opacity: 0;
+            color: rgba(250, 204, 21, 0.98);
+            text-shadow:
+              0 0 18px rgba(250, 204, 21, 0.28),
+              0 0 34px rgba(250, 204, 21, 0.18);
+            animation: endFlyUp 520ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+            animation-delay: 980ms;
+          }
+
+          .wave-letter {
+            display: inline-block;
+            animation: endWave 450ms ease-in-out 1;
+            animation-delay: var(--d);
+          }
+
+          @keyframes endFlyLeft {
+            from {
+              transform: translateX(-56px);
+              opacity: 0;
+              filter: blur(2px);
+            }
+            to {
+              transform: translateX(0);
+              opacity: 1;
+              filter: blur(0px);
+            }
+          }
+
+          @keyframes endFlyRight {
+            from {
+              transform: translateX(56px);
+              opacity: 0;
+              filter: blur(2px);
+            }
+            to {
+              transform: translateX(0);
+              opacity: 1;
+              filter: blur(0px);
+            }
+          }
+
+          @keyframes endFlyUp {
+            from {
+              transform: translateY(28px);
+              opacity: 0;
+              filter: blur(2px);
+            }
+            to {
+              transform: translateY(0);
+              opacity: 1;
+              filter: blur(0px);
+            }
+          }
+
+          @keyframes endPop {
+            0% {
+              transform: scale(0.92);
+              opacity: 0;
+            }
+            70% {
+              transform: scale(1.06);
+              opacity: 1;
+            }
+            100% {
+              transform: scale(1);
+              opacity: 1;
+            }
+          }
+
+          @keyframes endWave {
+            0% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-7px);
+            }
+            100% {
+              transform: translateY(0);
+            }
+          }
+        `}</style>
       </div>
     );
   }
