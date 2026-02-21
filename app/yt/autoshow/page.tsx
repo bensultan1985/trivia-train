@@ -8,7 +8,7 @@ async function getAutoShowItems(): Promise<AutoShowItem[]> {
   try {
     // Prefer special questions for recording, but fall back to any.
     const special = await prisma.$queryRaw<any[]>`
-      SELECT id, question, "correctAnswer" AS answer, category
+      SELECT id, question, "correctAnswer" AS answer, "answerContext" AS context, category
       FROM "TriviaQuestion"
       WHERE "specialQuestion" = true
       ORDER BY RANDOM()
@@ -21,6 +21,7 @@ async function getAutoShowItems(): Promise<AutoShowItem[]> {
         id: String(q.id),
         question: String(q.question),
         answer: String(q.answer),
+        context: q.context ? String(q.context) : null,
         category: q.category ? String(q.category) : null,
       }));
 
@@ -31,14 +32,14 @@ async function getAutoShowItems(): Promise<AutoShowItem[]> {
 
     const filler = excludeIds.length
       ? await prisma.$queryRaw<any[]>`
-          SELECT id, question, "correctAnswer" AS answer, category
+          SELECT id, question, "correctAnswer" AS answer, "answerContext" AS context, category
           FROM "TriviaQuestion"
           WHERE id NOT IN (${Prisma.join(excludeIds)})
           ORDER BY RANDOM()
           LIMIT ${remaining}
         `
       : await prisma.$queryRaw<any[]>`
-          SELECT id, question, "correctAnswer" AS answer, category
+          SELECT id, question, "correctAnswer" AS answer, "answerContext" AS context, category
           FROM "TriviaQuestion"
           ORDER BY RANDOM()
           LIMIT ${remaining}
@@ -50,6 +51,7 @@ async function getAutoShowItems(): Promise<AutoShowItem[]> {
         id: String(q.id),
         question: String(q.question),
         answer: String(q.answer),
+        context: q.context ? String(q.context) : null,
         category: q.category ? String(q.category) : null,
       }));
 
@@ -65,18 +67,21 @@ async function getAutoShowItems(): Promise<AutoShowItem[]> {
       id: "fallback-1",
       question: "What is the capital of France?",
       answer: "Paris",
+      context: null,
       category: "Geography",
     },
     {
       id: "fallback-2",
       question: "What planet is known as the Red Planet?",
       answer: "Mars",
+      context: null,
       category: "Science",
     },
     {
       id: "fallback-3",
       question: "Who wrote 'Romeo and Juliet'?",
       answer: "William Shakespeare",
+      context: null,
       category: "Literature",
     },
   ];
