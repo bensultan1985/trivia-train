@@ -50,13 +50,19 @@ type WinSoundId =
 
 const WIN_SOUND_STORAGE_KEY = "yt_autoshow_win_sound";
 const SHOW_CONTEXT_STORAGE_KEY = "yt_autoshow_show_context";
+const GAME_LENGTH_STORAGE_KEY = "yt_autoshow_game_length";
 const TIMER_ENABLED_STORAGE_KEY = "yt_autoshow_timer_enabled";
 const TIMER_MANUAL_STORAGE_KEY = "yt_autoshow_timer_manual";
+const TIMER_PLACEMENT_STORAGE_KEY = "yt_autoshow_timer_placement";
 const TIMER_D3_STORAGE_KEY = "yt_autoshow_timer_d3";
 const TIMER_D2_STORAGE_KEY = "yt_autoshow_timer_d2";
 const TIMER_D1_STORAGE_KEY = "yt_autoshow_timer_d1";
 
 type CountdownValue = 3 | 2 | 1;
+
+type TimerPlacement = "between" | "overlay-right" | "under-answer";
+
+type GameLength = 5 | 10;
 
 function clampNumber(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
@@ -346,11 +352,14 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
   const safeItems = useMemo(() => (Array.isArray(items) ? items : []), [items]);
 
   const [started, setStarted] = useState(false);
+  const [gameLength, setGameLength] = useState<GameLength>(10);
   const [winSoundId, setWinSoundId] = useState<WinSoundId>(WIN_SOUNDS[0].id);
   const [showContextStep, setShowContextStep] = useState(false);
 
   const [timerEnabled, setTimerEnabled] = useState(false);
   const [timerManualStart, setTimerManualStart] = useState(false);
+  const [timerPlacement, setTimerPlacement] =
+    useState<TimerPlacement>("between");
   const [timerD3Seconds, setTimerD3Seconds] = useState(1);
   const [timerD2Seconds, setTimerD2Seconds] = useState(1);
   const [timerD1Seconds, setTimerD1Seconds] = useState(1);
@@ -369,6 +378,8 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
   const [countdownKey, setCountdownKey] = useState(0);
   const countdownTimeoutsRef = useRef<number[]>([]);
 
+  const [transcriptCopied, setTranscriptCopied] = useState(false);
+
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const startedRef = useRef(false);
@@ -378,9 +389,44 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
   const hasCurrentRef = useRef(false);
   const winSoundIdRef = useRef<WinSoundId>(WIN_SOUNDS[0].id);
 
-  const current = safeItems[index] ?? null;
-  const total = safeItems.length;
+  const gameItems = useMemo(
+    () => safeItems.slice(0, gameLength),
+    [gameLength, safeItems],
+  );
+  const current = gameItems[index] ?? null;
+  const total = gameItems.length;
   const currentContext = (current?.context ?? null)?.trim?.() || null;
+  const isExtraInfoSlide =
+    revealed && showContextStep && Boolean(currentContext) && extraInfoShown;
+
+  const transcriptText = useMemo(() => {
+    const lines: string[] = [];
+    lines.push(`YT AutoShow Transcript (${total} questions)`);
+    lines.push("");
+
+    for (let i = 0; i < gameItems.length; i++) {
+      const item = gameItems[i];
+      const extraInfo = (item?.context ?? null)?.trim?.() || "";
+      lines.push(`Q${i + 1}: ${item.question}`);
+      lines.push(`A${i + 1}: ${item.answer}`);
+      if (extraInfo) {
+        lines.push(`Extra info: ${extraInfo}`);
+      }
+      lines.push("");
+    }
+
+    return lines.join("\n").trimEnd();
+  }, [gameItems, total]);
+
+  const copyTranscript = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(transcriptText);
+      setTranscriptCopied(true);
+      window.setTimeout(() => setTranscriptCopied(false), 900);
+    } catch {
+      // ignore
+    }
+  }, [transcriptText]);
 
   useEffect(() => {
     startedRef.current = started;
@@ -396,6 +442,14 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
       const saved = window.localStorage.getItem(WIN_SOUND_STORAGE_KEY);
       const isValid = WIN_SOUNDS.some((s) => s.id === saved);
       if (saved && isValid) setWinSoundId(saved as WinSoundId);
+    } catch {
+      // ignore
+    }
+
+    try {
+      const savedLength = window.localStorage.getItem(GAME_LENGTH_STORAGE_KEY);
+      if (savedLength === "5") setGameLength(5);
+      if (savedLength === "10") setGameLength(10);
     } catch {
       // ignore
     }
@@ -423,6 +477,17 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
       if (savedTimerManual === "1") setTimerManualStart(true);
       if (savedTimerManual === "0") setTimerManualStart(false);
 
+      const savedPlacement = window.localStorage.getItem(
+        TIMER_PLACEMENT_STORAGE_KEY,
+      );
+      if (
+        savedPlacement === "between" ||
+        savedPlacement === "overlay-right" ||
+        savedPlacement === "under-answer"
+      ) {
+        setTimerPlacement(savedPlacement);
+      }
+
       const savedD3 = window.localStorage.getItem(TIMER_D3_STORAGE_KEY);
       const savedD2 = window.localStorage.getItem(TIMER_D2_STORAGE_KEY);
       const savedD1 = window.localStorage.getItem(TIMER_D1_STORAGE_KEY);
@@ -445,6 +510,14 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
 
   useEffect(() => {
     try {
+      window.localStorage.setItem(GAME_LENGTH_STORAGE_KEY, String(gameLength));
+    } catch {
+      // ignore
+    }
+  }, [gameLength]);
+
+  useEffect(() => {
+    try {
       window.localStorage.setItem(
         SHOW_CONTEXT_STORAGE_KEY,
         showContextStep ? "1" : "0",
@@ -464,6 +537,7 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
         TIMER_MANUAL_STORAGE_KEY,
         timerManualStart ? "1" : "0",
       );
+      window.localStorage.setItem(TIMER_PLACEMENT_STORAGE_KEY, timerPlacement);
       window.localStorage.setItem(TIMER_D3_STORAGE_KEY, String(timerD3Seconds));
       window.localStorage.setItem(TIMER_D2_STORAGE_KEY, String(timerD2Seconds));
       window.localStorage.setItem(TIMER_D1_STORAGE_KEY, String(timerD1Seconds));
@@ -476,6 +550,7 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
     timerD3Seconds,
     timerEnabled,
     timerManualStart,
+    timerPlacement,
   ]);
 
   const stopCountdown = useCallback(() => {
@@ -692,6 +767,17 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
     containerRef.current?.focus?.();
   }, []);
 
+  useEffect(() => {
+    // If length changes (or items arrive), keep index in bounds.
+    if (index > total - 1) {
+      stopCountdown();
+      setIndex(0);
+      setRevealed(false);
+      setExtraInfoShown(false);
+      setFinished(false);
+    }
+  }, [index, stopCountdown, total]);
+
   if (total === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center p-8">
@@ -719,6 +805,41 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
             </div>
             <div className="mt-3 text-white/70">
               Pick a correct-answer sound, sample it, then start.
+            </div>
+
+            <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div className="text-sm font-semibold text-white/70">
+                Game length
+              </div>
+              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setGameLength(5)}
+                  className={
+                    gameLength === 5
+                      ? "rounded-xl border border-emerald-300/40 bg-emerald-500/10 px-4 py-3 text-left"
+                      : "rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left"
+                  }
+                  aria-pressed={gameLength === 5}
+                >
+                  <div className="font-black">5 questions</div>
+                  <div className="text-sm text-white/60">Short round</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setGameLength(10)}
+                  className={
+                    gameLength === 10
+                      ? "rounded-xl border border-emerald-300/40 bg-emerald-500/10 px-4 py-3 text-left"
+                      : "rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left"
+                  }
+                  aria-pressed={gameLength === 10}
+                >
+                  <div className="font-black">10 questions</div>
+                  <div className="text-sm text-white/60">Full round</div>
+                </button>
+              </div>
             </div>
 
             <div className="mt-10">
@@ -825,6 +946,25 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
                     </label>
                   </div>
 
+                  <label className="mt-4 block rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                    <div className="text-sm font-semibold text-white/70">
+                      Timer position
+                    </div>
+                    <select
+                      value={timerPlacement}
+                      onChange={(e) =>
+                        setTimerPlacement(e.target.value as TimerPlacement)
+                      }
+                      className="mt-2 w-full rounded-lg bg-white/10 px-3 py-2 text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-emerald-400/60"
+                    >
+                      <option value="between">Between question & answer</option>
+                      <option value="overlay-right">
+                        Overlay right on answer
+                      </option>
+                      <option value="under-answer">Under the answer</option>
+                    </select>
+                  </label>
+
                   <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <label className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
                       <div className="text-sm font-semibold text-white/70">
@@ -905,6 +1045,32 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
                 </div>
               ) : null}
             </div>
+
+            <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="font-black">Transcript</div>
+                  <div className="text-sm text-white/60">
+                    Copy/paste for recording. Matches question order.
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={copyTranscript}
+                  className="shrink-0 rounded-xl bg-white/10 px-4 py-2 font-bold text-white/85 hover:bg-white/15"
+                >
+                  {transcriptCopied ? "Copied" : "Copy"}
+                </button>
+              </div>
+
+              <textarea
+                readOnly
+                value={transcriptText}
+                rows={Math.min(18, Math.max(8, total * 3 + 3))}
+                className="mt-4 w-full resize-y rounded-xl bg-slate-950/40 px-4 py-3 text-sm text-white/90 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-emerald-400/60 font-mono"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -983,17 +1149,19 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
         ) : null}
 
         <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-8 md:p-12 shadow-2xl">
-          {!cleanMode && current?.category ? (
+          {!isExtraInfoSlide && !cleanMode && current?.category ? (
             <div className="text-sm uppercase tracking-widest text-white/60">
               {current.category}
             </div>
           ) : null}
 
-          <div className="mt-4 text-3xl md:text-5xl font-black leading-tight">
-            {current?.question}
-          </div>
+          {!isExtraInfoSlide ? (
+            <div className="mt-4 text-3xl md:text-5xl font-black leading-tight">
+              {current?.question}
+            </div>
+          ) : null}
 
-          {timerEnabled ? (
+          {!isExtraInfoSlide && timerEnabled && timerPlacement === "between" ? (
             <div className="mt-8 flex justify-center h-20">
               {!revealed && countdownValue ? (
                 <div key={countdownKey} className="countdown-pop">
@@ -1008,53 +1176,72 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
             </div>
           ) : null}
 
-          <div className="mt-10">
-            {revealed && showContextStep && currentContext && extraInfoShown ? (
-              <div
-                key={`${current?.id ?? "q"}-extra-${revealPulse}`}
-                className="extra-pop rounded-2xl border border-white/10 bg-white/5 p-6"
-                aria-label="Extra info"
-              >
-                <div className="text-sm font-semibold text-white/70">
-                  Extra info
+          <div className={isExtraInfoSlide ? "mt-0" : "mt-10"}>
+            <div className="relative">
+              {timerEnabled &&
+              timerPlacement === "overlay-right" &&
+              !revealed &&
+              countdownValue ? (
+                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
+                  <div key={countdownKey} className="countdown-pop">
+                    <CountdownCircle
+                      value={countdownValue}
+                      durationMs={countdownDurationMs}
+                    />
+                  </div>
                 </div>
-                <div className="mt-2 text-base md:text-lg text-white/90 leading-relaxed">
-                  {currentContext}
-                </div>
-              </div>
-            ) : (
-              <div
-                key={`${current?.id ?? "q"}-pulse-${revealPulse}`}
-                className={
-                  revealed
-                    ? "answer-pop rounded-2xl bg-emerald-500/15 border border-emerald-300/30 p-6"
-                    : "rounded-2xl bg-white/5 border border-white/10 p-6"
-                }
-              >
-                <div className="text-sm font-semibold text-white/70">
-                  Answer
-                </div>
+              ) : null}
 
+              {revealed &&
+              showContextStep &&
+              currentContext &&
+              extraInfoShown ? (
                 <div
+                  key={`${current?.id ?? "q"}-extra-${revealPulse}`}
+                  className="extra-pop rounded-2xl border border-white/10 bg-white/5 p-6"
+                  aria-label="Extra info"
+                >
+                  <div className="text-sm font-semibold text-white/70">
+                    More on that...
+                  </div>
+                  <div className="mt-2 text-xl md:text-xl lg:text-xl text-white/90 leading-relaxed">
+                    {currentContext}
+                  </div>
+                </div>
+              ) : (
+                <div
+                  key={`${current?.id ?? "q"}-pulse-${revealPulse}`}
                   className={
                     revealed
-                      ? "mt-2 text-2xl md:text-4xl font-black text-emerald-100 transition-all duration-300"
-                      : "mt-2 text-2xl md:text-4xl font-black text-white/10 blur-md select-none transition-all duration-300"
+                      ? "answer-pop rounded-2xl bg-emerald-500/15 border border-emerald-300/30 p-6"
+                      : "rounded-2xl bg-white/5 border border-white/10 p-6"
                   }
-                  aria-label={revealed ? "Answer revealed" : "Answer hidden"}
                 >
-                  {revealed ? current?.answer : "████████████"}
-                </div>
-
-                {!cleanMode && !revealed && lastKeyHintVisible ? (
-                  <div className="mt-4 text-sm text-white/60">
-                    {timerEnabled && timerManualStart && !countdownValue
-                      ? "Press → to start the timer."
-                      : "Press → to reveal."}
+                  <div className="text-sm font-semibold text-white/70">
+                    Answer
                   </div>
-                ) : null}
-              </div>
-            )}
+
+                  <div
+                    className={
+                      revealed
+                        ? "mt-2 text-2xl md:text-4xl font-black text-emerald-100 transition-all duration-300"
+                        : "mt-2 text-2xl md:text-4xl font-black text-white/10 blur-md select-none transition-all duration-300"
+                    }
+                    aria-label={revealed ? "Answer revealed" : "Answer hidden"}
+                  >
+                    {revealed ? current?.answer : "████████████"}
+                  </div>
+
+                  {!cleanMode && !revealed && lastKeyHintVisible ? (
+                    <div className="mt-4 text-sm text-white/60">
+                      {timerEnabled && timerManualStart && !countdownValue
+                        ? "Press → to start the timer."
+                        : "Press → to reveal."}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
           </div>
 
           {!cleanMode ? (
@@ -1076,6 +1263,21 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
             </div>
           ) : null}
         </div>
+
+        {timerEnabled && timerPlacement === "under-answer" ? (
+          <div className="mt-6 flex justify-center h-20">
+            {!revealed && countdownValue ? (
+              <div key={countdownKey} className="countdown-pop">
+                <CountdownCircle
+                  value={countdownValue}
+                  durationMs={countdownDurationMs}
+                />
+              </div>
+            ) : (
+              <div aria-hidden className="h-20 w-20" />
+            )}
+          </div>
+        ) : null}
 
         <style jsx global>{`
           .answer-pop {
