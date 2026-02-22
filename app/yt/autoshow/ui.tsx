@@ -54,9 +54,7 @@ const GAME_LENGTH_STORAGE_KEY = "yt_autoshow_game_length";
 const TIMER_ENABLED_STORAGE_KEY = "yt_autoshow_timer_enabled";
 const TIMER_MANUAL_STORAGE_KEY = "yt_autoshow_timer_manual";
 const TIMER_PLACEMENT_STORAGE_KEY = "yt_autoshow_timer_placement";
-const TIMER_D3_STORAGE_KEY = "yt_autoshow_timer_d3";
-const TIMER_D2_STORAGE_KEY = "yt_autoshow_timer_d2";
-const TIMER_D1_STORAGE_KEY = "yt_autoshow_timer_d1";
+const TIMER_DURATION_STORAGE_KEY = "yt_autoshow_timer_duration";
 
 type CountdownValue = 3 | 2 | 1;
 
@@ -361,9 +359,7 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
   const [timerManualStart, setTimerManualStart] = useState(false);
   const [timerPlacement, setTimerPlacement] =
     useState<TimerPlacement>("between");
-  const [timerD3Seconds, setTimerD3Seconds] = useState(1);
-  const [timerD2Seconds, setTimerD2Seconds] = useState(1);
-  const [timerD1Seconds, setTimerD1Seconds] = useState(1);
+  const [timerDurationSeconds, setTimerDurationSeconds] = useState(1);
 
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -496,13 +492,12 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
         setTimerPlacement(savedPlacement);
       }
 
-      const savedD3 = window.localStorage.getItem(TIMER_D3_STORAGE_KEY);
-      const savedD2 = window.localStorage.getItem(TIMER_D2_STORAGE_KEY);
-      const savedD1 = window.localStorage.getItem(TIMER_D1_STORAGE_KEY);
-
-      if (savedD3) setTimerD3Seconds(parseSecondsInput(savedD3, 1));
-      if (savedD2) setTimerD2Seconds(parseSecondsInput(savedD2, 1));
-      if (savedD1) setTimerD1Seconds(parseSecondsInput(savedD1, 1));
+      const savedDuration = window.localStorage.getItem(
+        TIMER_DURATION_STORAGE_KEY,
+      );
+      if (savedDuration) {
+        setTimerDurationSeconds(parseSecondsInput(savedDuration, 1));
+      }
     } catch {
       // ignore
     }
@@ -546,20 +541,14 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
         timerManualStart ? "1" : "0",
       );
       window.localStorage.setItem(TIMER_PLACEMENT_STORAGE_KEY, timerPlacement);
-      window.localStorage.setItem(TIMER_D3_STORAGE_KEY, String(timerD3Seconds));
-      window.localStorage.setItem(TIMER_D2_STORAGE_KEY, String(timerD2Seconds));
-      window.localStorage.setItem(TIMER_D1_STORAGE_KEY, String(timerD1Seconds));
+      window.localStorage.setItem(
+        TIMER_DURATION_STORAGE_KEY,
+        String(timerDurationSeconds),
+      );
     } catch {
       // ignore
     }
-  }, [
-    timerD1Seconds,
-    timerD2Seconds,
-    timerD3Seconds,
-    timerEnabled,
-    timerManualStart,
-    timerPlacement,
-  ]);
+  }, [timerDurationSeconds, timerEnabled, timerManualStart, timerPlacement]);
 
   const stopCountdown = useCallback(() => {
     for (const timeoutId of countdownTimeoutsRef.current) {
@@ -642,9 +631,10 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
 
     const countdownIndex = indexRef.current;
 
-    const d3 = Math.round(clampNumber(timerD3Seconds, 0.1, 30) * 1000);
-    const d2 = Math.round(clampNumber(timerD2Seconds, 0.1, 30) * 1000);
-    const d1 = Math.round(clampNumber(timerD1Seconds, 0.1, 30) * 1000);
+    const d = Math.round(clampNumber(timerDurationSeconds, 0.1, 30) * 1000);
+    const d3 = d;
+    const d2 = d;
+    const d1 = d;
 
     setCountdownValue(3);
     setCountdownDurationMs(d3);
@@ -678,13 +668,7 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
     );
 
     countdownTimeoutsRef.current = [tTo2, tTo1, tDone];
-  }, [
-    revealAnswer,
-    stopCountdown,
-    timerD1Seconds,
-    timerD2Seconds,
-    timerD3Seconds,
-  ]);
+  }, [revealAnswer, stopCountdown, timerDurationSeconds]);
 
   useEffect(() => {
     if (!started) {
@@ -1006,8 +990,7 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
                     Countdown timer (3–2–1)
                   </span>
                   <span className="block text-sm text-white/60">
-                    Shows a circle below the question. Each number uses its own
-                    duration.
+                    Shows a circle below the question.
                   </span>
                 </span>
               </label>
@@ -1053,10 +1036,10 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
                     </select>
                   </label>
 
-                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <label className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+                  <div className="mt-4">
+                    <label className="block rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                       <div className="text-sm font-semibold text-white/70">
-                        3 duration (sec)
+                        Timer duration (sec)
                       </div>
                       <input
                         type="number"
@@ -1064,55 +1047,18 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
                         min={0.1}
                         max={30}
                         step={0.1}
-                        value={timerD3Seconds}
+                        value={timerDurationSeconds}
                         onChange={(e) =>
-                          setTimerD3Seconds(
+                          setTimerDurationSeconds(
                             parseSecondsInput(e.target.value, 1),
                           )
                         }
                         className="mt-2 w-full rounded-lg bg-white/10 px-3 py-2 text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-emerald-400/60"
                       />
                     </label>
-
-                    <label className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                      <div className="text-sm font-semibold text-white/70">
-                        2 duration (sec)
-                      </div>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        min={0.1}
-                        max={30}
-                        step={0.1}
-                        value={timerD2Seconds}
-                        onChange={(e) =>
-                          setTimerD2Seconds(
-                            parseSecondsInput(e.target.value, 1),
-                          )
-                        }
-                        className="mt-2 w-full rounded-lg bg-white/10 px-3 py-2 text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-emerald-400/60"
-                      />
-                    </label>
-
-                    <label className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                      <div className="text-sm font-semibold text-white/70">
-                        1 duration (sec)
-                      </div>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        min={0.1}
-                        max={30}
-                        step={0.1}
-                        value={timerD1Seconds}
-                        onChange={(e) =>
-                          setTimerD1Seconds(
-                            parseSecondsInput(e.target.value, 1),
-                          )
-                        }
-                        className="mt-2 w-full rounded-lg bg-white/10 px-3 py-2 text-white outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-emerald-400/60"
-                      />
-                    </label>
+                    <div className="mt-2 text-xs text-white/50">
+                      Applies to 3, 2, and 1.
+                    </div>
                   </div>
                 </>
               ) : null}
