@@ -352,6 +352,7 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
   const safeItems = useMemo(() => (Array.isArray(items) ? items : []), [items]);
 
   const [started, setStarted] = useState(false);
+  const [titleActive, setTitleActive] = useState(false);
   const [gameLength, setGameLength] = useState<GameLength>(10);
   const [winSoundId, setWinSoundId] = useState<WinSoundId>(WIN_SOUNDS[0].id);
   const [showContextStep, setShowContextStep] = useState(false);
@@ -377,6 +378,13 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
   const [countdownDurationMs, setCountdownDurationMs] = useState(1000);
   const [countdownKey, setCountdownKey] = useState(0);
   const countdownTimeoutsRef = useRef<number[]>([]);
+
+  const [titleCountdownValue, setTitleCountdownValue] =
+    useState<CountdownValue | null>(null);
+  const [titleCountdownDurationMs, setTitleCountdownDurationMs] =
+    useState(1000);
+  const [titleCountdownKey, setTitleCountdownKey] = useState(0);
+  const titleTimeoutsRef = useRef<number[]>([]);
 
   const [transcriptCopied, setTranscriptCopied] = useState(false);
 
@@ -561,6 +569,61 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
     setCountdownValue(null);
   }, []);
 
+  const stopTitleSequence = useCallback(() => {
+    for (const timeoutId of titleTimeoutsRef.current) {
+      window.clearTimeout(timeoutId);
+    }
+    titleTimeoutsRef.current = [];
+    setTitleCountdownValue(null);
+    setTitleActive(false);
+  }, []);
+
+  const startTitleSequence = useCallback(() => {
+    stopTitleSequence();
+
+    setTitleActive(true);
+    setTitleCountdownValue(null);
+
+    const waitBeforeMs = 1000;
+    const d3 = 1000;
+    const d2 = 1000;
+    const d1 = 1000;
+
+    const tStart = window.setTimeout(() => {
+      setTitleCountdownValue(3);
+      setTitleCountdownDurationMs(d3);
+      setTitleCountdownKey((k) => k + 1);
+      playCountdownTone(3);
+    }, waitBeforeMs);
+
+    const tTo2 = window.setTimeout(() => {
+      setTitleCountdownValue(2);
+      setTitleCountdownDurationMs(d2);
+      setTitleCountdownKey((k) => k + 1);
+      playCountdownTone(2);
+    }, waitBeforeMs + d3);
+
+    const tTo1 = window.setTimeout(
+      () => {
+        setTitleCountdownValue(1);
+        setTitleCountdownDurationMs(d1);
+        setTitleCountdownKey((k) => k + 1);
+        playCountdownTone(1);
+      },
+      waitBeforeMs + d3 + d2,
+    );
+
+    const tDone = window.setTimeout(
+      () => {
+        setTitleCountdownValue(null);
+        setTitleActive(false);
+      },
+      waitBeforeMs + d3 + d2 + d1,
+    );
+
+    titleTimeoutsRef.current = [tStart, tTo2, tTo1, tDone];
+  }, [stopTitleSequence]);
+
   const revealAnswer = useCallback(() => {
     if (!startedRef.current) return;
     if (finishedRef.current) return;
@@ -629,6 +692,11 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
       return;
     }
 
+    if (titleActive) {
+      stopCountdown();
+      return;
+    }
+
     if (!timerEnabled) {
       stopCountdown();
       return;
@@ -650,6 +718,7 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
     index,
     revealed,
     started,
+    titleActive,
     startCountdown,
     stopCountdown,
     timerEnabled,
@@ -659,6 +728,11 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
   const advance = useCallback(() => {
     if (!started) return;
     if (finished) return;
+
+    if (titleActive) {
+      stopTitleSequence();
+      return;
+    }
 
     if (!current) {
       setFinished(true);
@@ -708,13 +782,16 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
     showContextStep,
     started,
     startCountdown,
+    stopTitleSequence,
     total,
     revealAnswer,
+    titleActive,
     timerEnabled,
     timerManualStart,
   ]);
 
   const restart = useCallback(() => {
+    stopTitleSequence();
     stopCountdown();
     setIndex(0);
     setRevealed(false);
@@ -723,17 +800,18 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
     setRevealPulse(0);
     setLastKeyHintVisible(true);
     setStarted(false);
-  }, [stopCountdown]);
+  }, [stopCountdown, stopTitleSequence]);
 
   const startGame = useCallback(() => {
     setStarted(true);
+    startTitleSequence();
     setLastKeyHintVisible(true);
     setRevealed(false);
     setExtraInfoShown(false);
     stopCountdown();
     // Helpful to ensure audio can play (resume context on a user gesture).
     void getAudioContext()?.resume?.();
-  }, [stopCountdown]);
+  }, [startTitleSequence, stopCountdown]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -761,6 +839,16 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [advance, startGame, started]);
+
+  useEffect(() => {
+    if (!started) {
+      stopTitleSequence();
+      return;
+    }
+
+    if (!titleActive) return;
+    return () => stopTitleSequence();
+  }, [started, stopTitleSequence, titleActive]);
 
   useEffect(() => {
     // Help ensure arrow keys go to the page (useful during recording).
@@ -1077,9 +1165,7 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
     );
   }
 
-  if (finished) {
-    const waveText = "for daily trivia";
-
+  if (titleActive) {
     return (
       <div
         ref={containerRef}
@@ -1087,41 +1173,106 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
         className="min-h-screen flex items-center justify-center p-8 outline-none"
       >
         <div className="max-w-4xl w-full text-center">
+          <div className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
+            Daily Trivia Warm-Up
+          </div>
+
+          <div className="mt-10 flex justify-center h-28">
+            {titleCountdownValue ? (
+              <div key={titleCountdownKey} className="countdown-pop">
+                <CountdownCircle
+                  value={titleCountdownValue}
+                  durationMs={titleCountdownDurationMs}
+                />
+              </div>
+            ) : (
+              <div aria-hidden className="h-28 w-28" />
+            )}
+          </div>
+
           {!cleanMode ? (
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-white/80">
-              End of round
+            <div className="mt-10 text-sm text-white/60">
+              Tip: Press → to skip.
             </div>
           ) : null}
+        </div>
+      </div>
+    );
+  }
 
-          <div className="mt-6">
-            <div className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
-              <span className="end-like inline-block">like</span>
-              <span className="end-and inline-block mx-4">and</span>
-              <span className="end-subscribe inline-block">subscribe</span>
+  if (finished) {
+    const waveText = "for daily trivia";
+    const waveStartMs = 1300;
+    const waveStaggerMs = 45;
+    const waveDurationMs = 450;
+    const mainEndMs =
+      waveStartMs +
+      Math.max(0, waveText.length - 1) * waveStaggerMs +
+      waveDurationMs;
+    const promoDelayMs = mainEndMs + 1000;
+
+    return (
+      <div
+        ref={containerRef}
+        tabIndex={-1}
+        className="min-h-screen p-8 outline-none"
+      >
+        <div
+          className="end-stage mx-auto max-w-4xl w-full min-h-[calc(100vh-64px)] relative flex flex-col items-center justify-center text-center"
+          style={{ ["--promoDelay" as any]: `${promoDelayMs}ms` } as any}
+        >
+          <div className="end-main">
+            {!cleanMode ? (
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-white/80">
+                End of round
+              </div>
+            ) : null}
+
+            <div className="mt-6 mb-10">
+              <div className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
+                <span className="end-like inline-block">like</span>
+                <span className="end-and inline-block mx-4">and</span>
+                <span className="end-subscribe inline-block">subscribe</span>
+              </div>
+
+              <div className="end-line2 mt-4 text-3xl md:text-5xl font-black tracking-tight leading-tight">
+                {Array.from(waveText).map((ch, i) => (
+                  <span
+                    key={`${ch}-${i}`}
+                    className={ch === " " ? "" : "wave-letter"}
+                    style={
+                      ch === " "
+                        ? undefined
+                        : ({
+                            ["--d" as any]: `${waveStartMs + i * waveStaggerMs}ms`,
+                          } as any)
+                    }
+                  >
+                    {ch === " " ? "\u00A0" : ch}
+                  </span>
+                ))}
+              </div>
             </div>
+          </div>
 
-            <div className="end-line2 mt-4 text-3xl md:text-5xl font-black tracking-tight leading-tight">
-              {Array.from(waveText).map((ch, i) => (
-                <span
-                  key={`${ch}-${i}`}
-                  className={ch === " " ? "" : "wave-letter"}
-                  style={
-                    ch === " "
-                      ? undefined
-                      : ({
-                          ["--d" as any]: `${1300 + i * 45}ms`,
-                        } as any)
-                  }
-                >
-                  {ch === " " ? "\u00A0" : ch}
-                </span>
-              ))}
+          <div className="end-promo" aria-hidden={false}>
+            <div className="end-promo-inner space-y-3">
+              <div className="text-lg md:text-xl font-semibold text-white/70">
+                Brought to you by
+              </div>
+              <div className="end-promo-brand text-4xl md:text-5xl font-black tracking-tight leading-tight">
+                Trivia Central
+              </div>
+              <div className="mx-auto max-w-2xl text-xl md:text-xl text-white/70 leading-relaxed">
+                Prepping for a game show or trivia night? <br></br>Train like a
+                pro on our free site.<br></br> Link in description.
+              </div>
             </div>
           </div>
 
           {!cleanMode ? (
-            <>
-              <div className="mt-8 flex items-center justify-center gap-3">
+            <div className="end-actions">
+              <div className="flex items-center justify-center gap-3">
                 <button
                   type="button"
                   onClick={restart}
@@ -1134,7 +1285,7 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
               <div className="mt-6 text-sm text-white/60">
                 Tip: Press → to advance during recording.
               </div>
-            </>
+            </div>
           ) : null}
         </div>
 
@@ -1182,6 +1333,46 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
             display: inline-block;
             animation: endWave 450ms ease-in-out 1;
             animation-delay: var(--d);
+          }
+
+          .end-stage {
+            --mainUp: clamp(120px, 16vh, 220px);
+          }
+
+          .end-main {
+            transform: translateY(0);
+            animation: endMainUp 520ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+            animation-delay: var(--promoDelay);
+          }
+
+          .end-promo {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            margin-top: 50px;
+            transform: translateY(-50%);
+            pointer-events: none;
+          }
+
+          .end-promo-inner {
+            opacity: 0;
+            animation: endPromoIn 520ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+            animation-delay: var(--promoDelay);
+          }
+
+          .end-actions {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+          }
+
+          .end-promo-brand {
+            color: rgba(226, 232, 240, 0.98);
+            text-shadow:
+              0 0 16px rgba(226, 232, 240, 0.18),
+              0 0 34px rgba(226, 232, 240, 0.12);
           }
 
           @keyframes endFlyLeft {
@@ -1247,6 +1438,28 @@ export default function AutoShowClient({ items, cleanMode = true }: Props) {
             }
             100% {
               transform: translateY(0);
+            }
+          }
+
+          @keyframes endMainUp {
+            from {
+              transform: translateY(0);
+            }
+            to {
+              transform: translateY(calc(-1 * var(--mainUp)));
+            }
+          }
+
+          @keyframes endPromoIn {
+            from {
+              transform: translateY(14px);
+              opacity: 0;
+              filter: blur(2px);
+            }
+            to {
+              transform: translateY(0);
+              opacity: 1;
+              filter: blur(0px);
             }
           }
         `}</style>
